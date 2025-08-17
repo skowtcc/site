@@ -8,7 +8,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from '~/components/ui/breadcrumb'
-import { SavedAssetsList } from '~/components/saved/saved-assets-list'
+import { UnifiedAssetList } from '~/components/asset/unified-asset-list'
 
 export const metadata: Metadata = {
     title: 'Saved Assets - skowt.cc',
@@ -38,7 +38,10 @@ export default function SavedAssetsPage() {
                     <p className="text-muted-foreground mt-2">View and manage your saved assets.</p>
                 </div>
 
-                <SavedAssetsList />
+                <UnifiedAssetList 
+                    endpoint="/user/saved-assets"
+                    requireAuth={true}
+                />
             </div>
         </div>
     )

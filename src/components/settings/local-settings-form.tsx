@@ -9,12 +9,23 @@ const LOCAL_STORAGE_KEY = 'showSuggestiveContent'
 
 export function LocalSettingsForm() {
     const [showSuggestive, setShowSuggestive] = useState(false)
-    const [isGBUser, setIsGBUser] = useState<boolean>(true)
+    const [isGBUser, setIsGBUser] = useState<boolean>(false)
 
     useEffect(() => {
         const stored = localStorage.getItem(LOCAL_STORAGE_KEY)
         if (stored !== null) {
             setShowSuggestive(stored === 'true')
+        }
+
+        // Detect UK users based on timezone
+        try {
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+            // UK uses Europe/London timezone (covers England, Wales, Scotland, Northern Ireland)
+            setIsGBUser(timezone === 'Europe/London')
+        } catch (error) {
+            // If timezone detection fails, default to false (allow content)
+            console.warn('Failed to detect timezone:', error)
+            setIsGBUser(false)
         }
     }, [])
 

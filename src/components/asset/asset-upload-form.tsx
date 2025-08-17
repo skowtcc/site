@@ -124,6 +124,14 @@ export function AssetUploadForm() {
             return
         }
 
+        // Check if user has permission to upload
+        if (user.role !== 'contributor' && user.role !== 'admin') {
+            toast.error('Access denied', {
+                description: 'Only contributors and admins can upload assets.',
+            })
+            return
+        }
+
         try {
             const formData = new FormData()
             formData.append('name', data.name)
@@ -170,6 +178,12 @@ export function AssetUploadForm() {
             console.error(error)
             toast.error('Upload failed')
         }
+    }
+
+    // Check if user has permission to view upload form
+    if (!user || (user.role !== 'contributor' && user.role !== 'admin')) {
+        router.push('/')
+        return null
     }
 
     return (

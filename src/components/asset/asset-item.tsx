@@ -226,7 +226,7 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
     if (variant === 'list') {
         return (
             <div
-                className={`relative flex items-center gap-4 p-4 border rounded-lg bg-card hover:border-3 hover:border-primary transition-all duration-150 cursor-pointer ${isSelected ? 'border-3 border-primary' : ''}`}
+                className={`relative flex items-center gap-4 p-4 border rounded-lg bg-card hover:border-3 hover:border-primary transition-all duration-150 cursor-pointer break-inside-avoid ${isSelected ? 'border-3 border-primary' : ''}`}
             >
                 <Link href={`/asset/${asset.id}`} className="flex items-center gap-4 w-full" onClick={handleItemClick}>
                     <div className="absolute inset-0">
@@ -238,11 +238,11 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
                     </div>
 
                     <div className="relative flex items-center gap-4 w-full">
-                        <div className="flex-shrink-0">
+                        <div className="flex-shrink-0 w-20 h-20 rounded bg-muted flex items-center justify-center p-2">
                             <img
                                 src={'https://pack.skowt.cc/cdn-cgi/image/width=100,quality=10/asset/' + asset.id + '.' + asset.extension}
                                 alt={asset.name}
-                                className={`w-20 h-20 rounded object-cover ${asset.isSuggestive && !showSuggestive ? 'blur-lg' : ''}`}
+                                className={`max-w-full max-h-full object-contain ${asset.isSuggestive && !showSuggestive ? 'blur-lg' : ''}`}
                             />
                         </div>
 
@@ -316,7 +316,7 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
 
     return (
         <div
-            className={`relative bg-card rounded-lg border overflow-hidden hover:border-3 hover:border-primary transition-all duration-150 mb-4 ${isSelected ? 'border-3 border-primary' : ' '}`}
+            className={`relative bg-card rounded-lg border overflow-hidden hover:border-3 hover:border-primary transition-all duration-150 mb-4 break-inside-avoid ${isSelected ? 'border-3 border-primary' : ' '}`}
         >
             <Link href={`/asset/${asset.id}`} onClick={handleItemClick}>
                 <div className="absolute inset-0">
@@ -329,11 +329,12 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
 
                 <div className="relative">
                     <div className="p-2">
-                        <div className="bg-muted relative rounded-md overflow-hidden">
+                        <div className="bg-muted relative rounded-md overflow-hidden flex items-center justify-center p-4" style={{ minHeight: '200px' }}>
                             <img
                                 src={'https://pack.skowt.cc/cdn-cgi/image/width=300,quality=70/asset/' + asset.id + '.' + asset.extension}
                                 alt={asset.name}
-                                className={`w-full h-auto object-cover ${asset.isSuggestive && !showSuggestive ? 'blur-lg' : ''}`}
+                                className={`max-w-full max-h-full object-contain ${asset.isSuggestive && !showSuggestive ? 'blur-lg' : ''}`}
+                                style={{ maxHeight: '250px' }}
                             />
                         </div>
                     </div>

@@ -17,7 +17,7 @@ export default function AdminDashboard() {
     const router = useRouter()
 
     useEffect(() => {
-        if (!user || user.role !== 'admin') {
+        if (user && user.role !== 'admin') {
             router.push('/')
         }
     }, [user])

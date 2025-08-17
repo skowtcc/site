@@ -16,49 +16,85 @@ import { useRouter } from 'next/navigation'
 export function DownloadHistoryList() {
     const [downloadHistory, setDownloadHistory] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
+    const [loadingMore, setLoadingMore] = useState(false)
     const [page, setPage] = useState(1)
-    const [pagination, setPagination] = useState<any>(null)
+    const [hasMore, setHasMore] = useState(true)
     
     const { data: session } = authClient.useSession()
     const user = session?.user
     const dispatch = useAppDispatch()
     const router = useRouter()
 
-    const fetchDownloadHistory = useCallback(async () => {
+    const fetchDownloadHistory = useCallback(async (isLoadMore = false) => {
         if (!user) return
+        if (!hasMore && isLoadMore) return
         
-        setLoading(true)
+        if (isLoadMore) {
+            setLoadingMore(true)
+        } else {
+            setLoading(true)
+        }
+        
         try {
             const response = await client.get(`/user/download-history`, {
                 query: { 
-                    page: page.toString(),
+                    page: isLoadMore ? page.toString() : '1',
                     limit: '20'  // Default 20, max 50
                 }
             })
             
-            setDownloadHistory(response.downloadHistory)
-            setPagination(response.pagination)
+            if (isLoadMore) {
+                // Filter out duplicates when appending
+                setDownloadHistory(prev => {
+                    const existingIds = new Set(prev.map(h => h.historyId))
+                    const uniqueNewHistory = response.downloadHistory.filter(
+                        (item: any) => !existingIds.has(item.historyId)
+                    )
+                    return [...prev, ...uniqueNewHistory]
+                })
+                setPage(prev => prev + 1)
+            } else {
+                setDownloadHistory(response.downloadHistory)
+                setPage(1)
+            }
+            
+            setHasMore(response.pagination?.hasNext || false)
         } catch (error) {
             console.error('Failed to fetch download history:', error)
             toast.error('Failed to load download history')
         } finally {
             setLoading(false)
+            setLoadingMore(false)
         }
-    }, [user, page])
+    }, [user, page, hasMore])
 
     useEffect(() => {
-        fetchDownloadHistory()
-    }, [fetchDownloadHistory])
+        fetchDownloadHistory(false)
+    }, [user])
+
+    // Infinite scroll handler
+    useEffect(() => {
+        const handleScroll = () => {
+            if (loadingMore || !hasMore || loading) return
+            
+            const scrollPosition = window.innerHeight + window.scrollY
+            const documentHeight = document.documentElement.offsetHeight
+            
+            // Load more when user is 200px from the bottom
+            if (scrollPosition >= documentHeight - 200) {
+                fetchDownloadHistory(true)
+            }
+        }
+        
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [loadingMore, hasMore, loading, fetchDownloadHistory])
 
     const handleRedownload = (assets: any[]) => {
         // Replace current selection with this batch
         dispatch(setSelectedAssets(assets))
-        toast.success(`Selected ${assets.length} assets for download`, {
-            description: 'Navigate to any asset page to access the download popover',
-            action: {
-                label: 'Go to assets',
-                onClick: () => router.push('/')
-            }
+        toast.success(`Reselected ${assets.length} assets for download`, {
+            description: 'You can download them from the top right corner.',
         })
     }
 
@@ -113,106 +149,64 @@ export function DownloadHistoryList() {
                                 Downloaded {formatDistanceToNow(new Date(historyItem.downloadedAt), { addSuffix: true })}
                             </span>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <Badge variant="secondary">
-                                {historyItem.assets.length} {historyItem.assets.length === 1 ? 'asset' : 'assets'}
-                            </Badge>
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleRedownload(historyItem.assets)}
-                                className="gap-2"
-                            >
-                                <RotateCcw className="h-3 w-3" />
-                                Re-select for Download
-                            </Button>
+                        <Badge variant="secondary">
+                            {historyItem.assets.length} {historyItem.assets.length === 1 ? 'asset' : 'assets'}
+                        </Badge>
+                    </div>
+
+                    {/* Asset Preview - First 5 small, rest hidden with count */}
+                    <div className="flex items-center gap-2">
+                        <div className="flex -space-x-2">
+                            {historyItem.assets.slice(0, 5).map((asset: any, index: number) => (
+                                <div 
+                                    key={asset.id} 
+                                    className="relative w-12 h-12 rounded-lg overflow-hidden bg-muted"
+                                    style={{ zIndex: 5 - index }}
+                                >
+                                    <Image
+                                        src={`https://pack.skowt.cc/cdn-cgi/image/width=100,quality=70/asset/${asset.id}.${asset.extension}`}
+                                        alt={asset.name}
+                                        width={48}
+                                        height={48}
+                                        className="object-cover w-full h-full"
+                                    />
+                                </div>
+                            ))}
+                            {historyItem.assets.length > 5 && (
+                                <div 
+                                    className="relative w-12 h-12 rounded-lg overflow-hidden bg-muted flex items-center justify-center"
+                                    style={{ zIndex: 0 }}
+                                >
+                                    <span className="text-xs font-medium text-muted-foreground">
+                                        +{historyItem.assets.length - 5}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </div>
 
-                    {/* Asset Preview Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-                        {historyItem.assets.slice(0, 12).map((asset: any) => (
-                            <div key={asset.id} className="group relative">
-                                <div className="aspect-square rounded-lg overflow-hidden bg-muted border">
-                                    <Image
-                                        src={`https://pack.skowt.cc/cdn-cgi/image/width=200,quality=70/asset/${asset.id}.${asset.extension}`}
-                                        alt={asset.name}
-                                        width={200}
-                                        height={200}
-                                        className="object-cover w-full h-full group-hover:scale-105 transition-transform"
-                                    />
-                                </div>
-                                <div className="mt-1">
-                                    <p className="text-xs truncate" title={asset.name}>
-                                        {asset.name}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                        {formatFileSize(asset.size)}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                        {historyItem.assets.length > 12 && (
-                            <div className="aspect-square rounded-lg overflow-hidden bg-muted border flex items-center justify-center">
-                                <div className="text-center">
-                                    <p className="text-2xl font-semibold text-muted-foreground">
-                                        +{historyItem.assets.length - 12}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">more</p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Total Size */}
+                    {/* Total Size and Reselect */}
                     <div className="mt-4 pt-4 border-t flex items-center justify-between">
                         <div className="text-sm text-muted-foreground">
                             Total size: {formatFileSize(historyItem.assets.reduce((sum: number, asset: any) => sum + asset.size, 0))}
                         </div>
-                        <div className="flex gap-2 flex-wrap">
-                            {/* Show unique games */}
-                            {Array.from(new Set(historyItem.assets.map((a: any) => a.gameSlug))).slice(0, 3).map((gameSlug: any) => {
-                                const game = historyItem.assets.find((a: any) => a.gameSlug === gameSlug)
-                                return (
-                                    <Badge key={gameSlug} variant="outline" className="text-xs gap-1">
-                                        <Image
-                                            src={`https://pack.skowt.cc/cdn-cgi/image/width=32,height=32,quality=75/game/${gameSlug}-icon.png`}
-                                            alt={game.gameName}
-                                            width={14}
-                                            height={14}
-                                            className="rounded"
-                                        />
-                                        {game.gameName}
-                                    </Badge>
-                                )
-                            })}
-                        </div>
+                        <Button
+                            size="sm"
+                            onClick={() => handleRedownload(historyItem.assets)}
+                            className="gap-2"
+                        >
+                            <RotateCcw className="h-3 w-3" />
+                            Reselect
+                        </Button>
                     </div>
                 </div>
             ))}
 
-            {/* Pagination */}
-            {pagination && pagination.totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 mt-6">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setPage(page - 1)}
-                        disabled={!pagination.hasPrev}
-                    >
-                        Previous
-                    </Button>
-                    <span className="text-sm text-muted-foreground">
-                        Page {page} of {pagination.totalPages}
-                    </span>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setPage(page + 1)}
-                        disabled={!pagination.hasNext}
-                    >
-                        Next
-                    </Button>
+            {/* Loading indicator for infinite scroll */}
+            {loadingMore && (
+                <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                    <span className="ml-2 text-sm text-muted-foreground">Loading more history...</span>
                 </div>
             )}
         </div>
