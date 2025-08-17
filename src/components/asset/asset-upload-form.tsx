@@ -349,17 +349,6 @@ export function AssetUploadForm() {
                                 <Button type="submit" className="flex-1" disabled={!form.formState.isValid}>
                                     Upload
                                 </Button>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => {
-                                        form.reset()
-                                        setImagePreview(null)
-                                    }}
-                                    className="px-6"
-                                >
-                                    Reset
-                                </Button>
                             </div>
                         </div>
                     </form>
