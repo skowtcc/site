@@ -334,20 +334,6 @@ export namespace Endpoints {
             }
         }
     }
-    export type post__personal_refreshDiscord = {
-        method: 'POST'
-        path: '/personal/refresh-discord'
-        requestFormat: 'json'
-        parameters: never
-        response: {
-            success: boolean
-            message: string
-            user?:
-                | { id: string; name: string; email: string; image: string | null; username: string | null }
-                | undefined
-        }
-    }
-
     // </Endpoints>
 }
 
@@ -373,7 +359,6 @@ export type EndpointByMethod = {
         '/asset/{id}/deny': Endpoints.post__asset_Id_deny
         '/asset/upload': Endpoints.post__asset_upload
         '/user/saved-assets/{id}': Endpoints.post__user_savedAssets_Id
-        '/personal/refresh-discord': Endpoints.post__personal_refreshDiscord
     }
     delete: {
         '/user/saved-assets/{assetId}': Endpoints.delete__user_savedAssets_AssetId
