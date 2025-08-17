@@ -103,6 +103,9 @@ importers:
             '@reduxjs/toolkit':
                 specifier: ^2.8.2
                 version: 2.8.2(react-redux@9.2.0(@types/react@19.1.8)(react@19.1.0)(redux@5.0.1))(react@19.1.0)
+            '@types/lodash':
+                specifier: ^4.17.20
+                version: 4.17.20
             '@zodios/core':
                 specifier: ^10.9.6
                 version: 10.9.6(axios@1.11.0)(zod@4.0.5)
@@ -139,6 +142,9 @@ importers:
             jszip:
                 specifier: ^3.10.1
                 version: 3.10.1
+            lodash:
+                specifier: ^4.17.21
+                version: 4.17.21
             lucide-react:
                 specifier: ^0.525.0
                 version: 0.525.0(react@19.1.0)
@@ -3793,6 +3799,12 @@ packages:
         resolution:
             {
                 integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==,
+            }
+
+    '@types/lodash@4.17.20':
+        resolution:
+            {
+                integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==,
             }
 
     '@types/node-fetch@2.6.13':
@@ -11309,6 +11321,8 @@ snapshots:
     '@types/json-schema@7.0.15': {}
 
     '@types/json5@0.0.29': {}
+
+    '@types/lodash@4.17.20': {}
 
     '@types/node-fetch@2.6.13':
         dependencies:

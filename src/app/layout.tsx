@@ -5,6 +5,7 @@ import { SiteHeader } from '~/components/site-header'
 import { Footer } from '~/components/nav/footer'
 import { ReduxProvider } from '~/lib/redux/provider'
 import { Toaster } from '~/components/ui/sonner'
+import { ScrollToTop } from '~/components/nav/scroll-to-top'
 
 export const metadata: Metadata = {
     title: 'skowt.cc',
@@ -24,6 +25,7 @@ export default function RootLayout({
                         <SiteHeader />
                         <div className="flex-1 flex flex-col gap-4">
                             {children}
+                            <ScrollToTop />
                             <Footer />
                         </div>
                     </div>

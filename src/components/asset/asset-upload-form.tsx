@@ -168,7 +168,7 @@ export function AssetUploadForm() {
                 } else {
                     toast.success('Asset added to approval queue.')
                     setTimeout(() => {
-                        router.push(`/`)
+                        router.push(`/upload`)
                     }, 3000)
                 }
             } else {

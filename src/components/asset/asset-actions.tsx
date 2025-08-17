@@ -8,6 +8,8 @@ import { isAssetSelected } from '~/lib/redux/utils'
 import { client } from '~/lib/api/client'
 import { authClient } from '~/lib/auth/auth-client'
 import { useEffect, useState } from 'react'
+import { HiOutlineClipboard } from 'react-icons/hi'
+import { toast } from 'sonner'
 
 type Asset = {
     id: string
@@ -98,6 +100,15 @@ export function AssetActions({ asset, className }: AssetActionsProps) {
         document.body.removeChild(link)
     }
 
+    const copyToClipboard = () => {
+        try {
+            navigator.clipboard.writeText('https://skowt.cc/asset/' + asset.id)
+            toast.success('Asset URL copied to clipboard!')
+        } catch (error) {
+            toast.error('Failed to copy Asset URL to clipboard.')
+        }
+    }
+
     const handleSave = () => {
         if (isSaved) {
             client.delete(`/user/saved-assets/{assetId}`, {
@@ -128,6 +139,10 @@ export function AssetActions({ asset, className }: AssetActionsProps) {
             <Button variant="outline" onClick={handleSave} className="hover:cursor-pointer" disabled={!user}>
                 <HeartIcon fill={isSaved ? 'currentColor' : 'none'} className="h-4 w-4" />
                 {isSaved ? 'Unsave Asset' : 'Save Asset'}
+            </Button>
+            <Button onClick={copyToClipboard} variant="outline" className="hover:cursor-pointer">
+                <HiOutlineClipboard className="h-4 w-4" />
+                Copy Asset URL
             </Button>
         </div>
     )
