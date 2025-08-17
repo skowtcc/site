@@ -550,11 +550,6 @@ export function UnifiedAssetList({
                                 <span className="ml-2 text-sm text-muted-foreground">Loading more assets...</span>
                             </div>
                         )}
-
-                        {/* End of results message */}
-                        {!hasMore && assets.length > 0 && (
-                            <div className="text-center py-8 text-sm text-muted-foreground">No more assets to load</div>
-                        )}
                     </>
                 )}
             </div>
