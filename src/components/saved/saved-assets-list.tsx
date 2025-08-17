@@ -9,7 +9,8 @@ import { Input } from '~/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~/components/ui/accordion'
 import { Checkbox } from '~/components/ui/checkbox'
-import { Search, Loader2 } from 'lucide-react'
+import { HiSearch } from 'react-icons/hi'
+import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import Image from 'next/image'
 import { useDebounce } from '~/hooks/use-debounce'
 
@@ -279,7 +280,7 @@ export function SavedAssetsList() {
             <div className="2xl:w-80 w-full bg-card rounded-lg border p-4 pt-2 space-y-6 h-fit">
                 <div className="space-y-4">
                     <div className="relative py-2">
-                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <HiSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Search saved assets..."
                             className="pl-10"
@@ -360,7 +361,7 @@ export function SavedAssetsList() {
 
                 {loading ? (
                     <div className="flex items-center justify-center min-h-[400px]">
-                        <Loader2 className="h-8 w-8 animate-spin" />
+                        <AiOutlineLoading3Quarters className="h-8 w-8 animate-spin" />
                     </div>
                 ) : savedAssets.length === 0 && !loadingMore ? (
                     <div className="text-center text-muted-foreground min-h-[400px] flex items-center justify-center">
@@ -380,7 +381,7 @@ export function SavedAssetsList() {
                         {/* Loading indicator for infinite scroll */}
                         {loadingMore && (
                             <div className="flex items-center justify-center py-8">
-                                <Loader2 className="h-6 w-6 animate-spin" />
+                                <AiOutlineLoading3Quarters className="h-6 w-6 animate-spin" />
                                 <span className="ml-2 text-sm text-muted-foreground">Loading more assets...</span>
                             </div>
                         )}

@@ -1,7 +1,7 @@
 'use client'
 
 import { Badge } from '~/components/ui/badge'
-import { Download, Eye, FileText, DownloadIcon, EyeIcon, EyeOffIcon, CalendarIcon } from 'lucide-react'
+import { EyeOffIcon } from 'lucide-react'
 import { useRef, useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -10,6 +10,7 @@ import { toggleAssetSelection } from '~/lib/redux/slices/asset-slice'
 import { isAssetSelected } from '~/lib/redux/utils'
 import { formatDistanceToNow } from 'date-fns'
 import { toast } from 'sonner'
+import { HiOutlineCalendar, HiOutlineDocument } from 'react-icons/hi'
 
 const LOCAL_STORAGE_KEY = 'showSuggestiveContent'
 
@@ -217,20 +218,10 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
         return `${sizeInMB.toFixed(1)}MB`
     }
 
-    const formatNumber = (num: number) => {
-        if (num >= 1000000) {
-            return `${(num / 1000000).toFixed(1)}M`
-        }
-        if (num >= 1000) {
-            return `${(num / 1000).toFixed(1)}K`
-        }
-        return num.toString()
-    }
-
     if (variant === 'list') {
         return (
             <div
-                className={`relative flex items-center gap-4 p-4 border rounded-lg bg-card hover:border-3 hover:border-primary transition-all duration-150 cursor-pointer break-inside-avoid ${isSelected ? 'border-3 border-primary' : ''}`}
+                className={`relative flex items-center gap-4 p-4 border rounded-lg bg-card border-2 hover:border-primary transition-all duration-150 cursor-pointer break-inside-avoid ${isSelected ? 'border-1 border-primary' : ''}`}
             >
                 <Link href={`/asset/${asset.id}`} className="flex items-center gap-4 w-full" onClick={handleItemClick}>
                     <div className="absolute inset-0">
@@ -285,7 +276,7 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
                                             <span>{formatNumber(asset.viewCount)}</span>
                                         </div> */}
                                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                            <CalendarIcon className="h-3 w-3" />
+                                            <HiOutlineCalendar className="h-3 w-3" />
                                             <span>
                                                 {formatDistanceToNow(new Date(asset.createdAt), { addSuffix: true })}
                                             </span>
@@ -332,7 +323,7 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
 
     return (
         <div
-            className={`relative bg-card rounded-lg border overflow-hidden hover:border-3 hover:border-primary transition-all duration-150 mb-4 break-inside-avoid ${isSelected ? 'border-3 border-primary' : ' '}`}
+            className={`relative bg-card rounded-lg border overflow-hidden border-2 hover:border-primary transition-all duration-150 mb-4 break-inside-avoid ${isSelected ? 'border-1 border-primary' : ' '}`}
         >
             <Link href={`/asset/${asset.id}`} onClick={handleItemClick}>
                 <div className="absolute inset-0">
@@ -391,12 +382,12 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
                             </div> */}
                             <div className="flex flex-row items-center gap-4">
                                 <div className="flex items-center gap-1">
-                                    <CalendarIcon className="h-3 w-3" />
+                                    <HiOutlineCalendar className="h-3 w-3" />
                                     <span>{formatDistanceToNow(new Date(asset.createdAt), { addSuffix: true })}</span>
                                 </div>
                             </div>
                             <div className="flex items-center gap-1">
-                                <FileText className="h-3 w-3" />
+                                <HiOutlineDocument className="h-3 w-3" />
                                 <span>{formatFileSize(asset.size)}</span>
                             </div>
                         </div>

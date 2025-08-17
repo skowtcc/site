@@ -15,18 +15,12 @@ import {
     CodeXmlIcon,
 } from 'lucide-react'
 import { Button } from '~/components/ui/button'
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '~/components/ui/breadcrumb'
 import { client } from '~/lib/api/client'
 import { notFound } from 'next/navigation'
 import { AssetImage } from '~/components/asset/asset-image'
 import { AssetActions } from '~/components/asset/asset-actions'
+import Link from 'next/link'
+import { HiArrowLeft, HiArrowRight } from 'react-icons/hi'
 
 export const runtime = 'edge'
 
@@ -105,32 +99,16 @@ export default async function Page({ params }: Props) {
     }
 
     return (
-        <div className="flex flex-col gap-4 p-6 min-h-screen">
-            <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink href="/">
-                            <HomeIcon className="h-4 w-4" />
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbLink href={`/?games=${asset.game.slug}`}>{asset.game.name}</BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbLink href={`/?categories=${asset.category.slug}`}>
-                            {asset.category.name}
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>{asset.name}</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
+        <div className="flex flex-col gap-2 p-6 min-h-screen">
+            <Link
+                href={`/?games=${asset.game.slug}&categories=${asset.category.slug}`}
+                className="flex items-center gap-2 mb-4"
+            >
+                <Button size="sm" variant={'outline'} className="w-min text-xs flex flex-row items-center gap-1">
+                    View {asset.game.name} {asset.category.name}
+                </Button>
+            </Link>
             <div className="flex lg:flex-row flex-col gap-6">
-                {}
                 <div className="lg:w-1/2">
                     <div className="bg-card border border-border rounded-lg p-4 xl:h-full">
                         <div
@@ -172,7 +150,9 @@ export default async function Page({ params }: Props) {
                                 <TableBody>
                                     <TableRow>
                                         <TableCell className="font-medium">Asset Name</TableCell>
-                                        <TableCell className="font-mono text-sm">{asset.name}</TableCell>
+                                        <TableCell className="line-clamp-1 overflow-x-auto text-sm">
+                                            {asset.name}
+                                        </TableCell>
                                     </TableRow>
                                     <TableRow className="bg-secondary/50">
                                         <TableCell className="font-medium">Game</TableCell>
@@ -232,13 +212,6 @@ export default async function Page({ params }: Props) {
                                         </TableCell>
                                     </TableRow>
                                     <TableRow className="bg-secondary/50">
-                                        <TableCell className="font-medium">Uploader</TableCell>
-                                        <TableCell className="flex items-center gap-2">
-                                            <User className="h-4 w-4" />
-                                            <span>{asset.uploadedBy.username || asset.uploadedBy.id}</span>
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
                                         <TableCell className="font-medium">Downloads</TableCell>
                                         <TableCell className="flex items-center gap-2">
                                             <Download className="h-4 w-4" />
@@ -246,7 +219,7 @@ export default async function Page({ params }: Props) {
                                             <span>Not enough data</span>
                                         </TableCell>
                                     </TableRow>
-                                    <TableRow className="bg-secondary/50">
+                                    <TableRow>
                                         <TableCell className="font-medium">Views</TableCell>
                                         <TableCell className="flex items-center gap-2">
                                             <Eye className="h-4 w-4" />

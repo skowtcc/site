@@ -105,7 +105,7 @@ export function DownloadPopover({ children }: DownloadPopoverProps) {
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>{children}</PopoverTrigger>
-            <PopoverContent className="w-96 p-0 bg-card border" align="end">
+            <PopoverContent className="w-84 p-0 bg-card border" align="end">
                 {}
                 <div className="flex items-center justify-between p-4 border-b">
                     <div className="flex flex-col gap-1">

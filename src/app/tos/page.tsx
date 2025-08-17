@@ -1,38 +1,15 @@
 import { Metadata } from 'next'
-import { HomeIcon } from 'lucide-react'
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '~/components/ui/breadcrumb'
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
+import { Card, CardContent } from '~/components/ui/card'
 
 export const metadata: Metadata = {
     title: 'Terms of Service - skowt.cc',
-    description: 'Terms of Service for skowt.cc asset platform',
+    description: 'Terms of Service for skowt.cc',
 }
 
 export default function TermsOfServicePage() {
     return (
         <div className="flex flex-col gap-4 p-6 min-h-screen">
             <div className="flex flex-col gap-6 max-w-4xl mx-auto w-full">
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/">
-                                <HomeIcon className="h-4 w-4" />
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>Terms of Service</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-
                 <div>
                     <h1 className="text-3xl font-bold">Terms of Service</h1>
                     <p className="text-muted-foreground mt-2">Last updated: {new Date().toLocaleDateString()}</p>

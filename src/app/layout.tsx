@@ -18,9 +18,8 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body className={` antialiased`}>
+            <body className={`antialiased`}>
                 <ReduxProvider>
-                    {}
                     <div className="[--header-height:calc(--spacing(14))] flex flex-col min-h-screen">
                         <SiteHeader />
                         <div className="flex-1 flex flex-col gap-4">
@@ -29,7 +28,6 @@ export default function RootLayout({
                         </div>
                     </div>
                     <Toaster />
-                    {/* </ThemeProvider> */}
                 </ReduxProvider>
             </body>
         </html>

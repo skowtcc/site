@@ -121,13 +121,13 @@ export function AssetActions({ asset, className }: AssetActionsProps) {
                 <DownloadIcon className="h-4 w-4" />
                 Download Asset
             </Button>
+            <Button variant="secondary" onClick={handleSelect} className="hover:cursor-pointer">
+                {isSelected ? <MinusIcon className="h-4 w-4" /> : <PlusIcon className="h-4 w-4" />}
+                {isSelected ? 'Deselect Asset' : 'Select Asset'}
+            </Button>
             <Button variant="outline" onClick={handleSave} className="hover:cursor-pointer" disabled={!user}>
                 <HeartIcon fill={isSaved ? 'currentColor' : 'none'} className="h-4 w-4" />
                 {isSaved ? 'Unsave Asset' : 'Save Asset'}
-            </Button>
-            <Button variant="outline" onClick={handleSelect} className="hover:cursor-pointer">
-                {isSelected ? <MinusIcon className="h-4 w-4" /> : <PlusIcon className="h-4 w-4" />}
-                {isSelected ? 'Deselect Asset' : 'Select Asset'}
             </Button>
         </div>
     )

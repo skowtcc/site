@@ -5,7 +5,8 @@ import { authClient } from '~/lib/auth/auth-client'
 import { client } from '~/lib/api/client'
 import { Button } from '~/components/ui/button'
 import { Badge } from '~/components/ui/badge'
-import { Loader2, Calendar, Package, RotateCcw } from 'lucide-react'
+import { HiCalendar, HiCube, HiRefresh } from 'react-icons/hi'
+import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import Image from 'next/image'
 import { formatDistanceToNow } from 'date-fns'
 import { useAppDispatch } from '~/lib/redux/store'
@@ -116,7 +117,7 @@ export function DownloadHistoryList() {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin" />
+                <AiOutlineLoading3Quarters className="h-8 w-8 animate-spin" />
             </div>
         )
     }
@@ -125,7 +126,6 @@ export function DownloadHistoryList() {
         return (
             <div className="text-center text-muted-foreground min-h-[400px] flex items-center justify-center">
                 <div>
-                    <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
                     <p className="text-lg font-medium mb-2">No download history</p>
                     <p className="text-sm">Your download history will appear here once you download assets.</p>
                 </div>
@@ -139,7 +139,7 @@ export function DownloadHistoryList() {
                 <div key={historyItem.historyId} className="bg-card border rounded-lg p-6">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                            <HiCalendar className="h-4 w-4 text-muted-foreground" />
                             <span className="text-sm text-muted-foreground">
                                 Downloaded{' '}
                                 {formatDistanceToNow(new Date(historyItem.downloadedAt), { addSuffix: true })}
@@ -190,7 +190,7 @@ export function DownloadHistoryList() {
                             )}
                         </div>
                         <Button size="sm" onClick={() => handleRedownload(historyItem.assets)} className="gap-2">
-                            <RotateCcw className="h-3 w-3" />
+                            <HiRefresh className="h-3 w-3" />
                             Reselect
                         </Button>
                     </div>
@@ -200,7 +200,7 @@ export function DownloadHistoryList() {
             {/* Loading indicator for infinite scroll */}
             {loadingMore && (
                 <div className="flex items-center justify-center py-8">
-                    <Loader2 className="h-6 w-6 animate-spin" />
+                    <AiOutlineLoading3Quarters className="h-6 w-6 animate-spin" />
                     <span className="ml-2 text-sm text-muted-foreground">Loading more history...</span>
                 </div>
             )}

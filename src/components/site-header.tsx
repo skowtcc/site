@@ -1,26 +1,14 @@
 'use client'
 
-import Image from 'next/image'
-import { MenuIcon, Download, Eye, CheckSquare } from 'lucide-react'
+import { HiMenu, HiDownload } from 'react-icons/hi'
 import { useState } from 'react'
-
-import { SearchForm } from '~/components/search-form'
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '~/components/ui/breadcrumb'
 import { Button } from '~/components/ui/button'
-import { Badge } from '~/components/ui/badge'
-import { Separator } from '~/components/ui/separator'
 import { useAppSelector, useAppDispatch } from '~/lib/redux/store'
 import { setMode } from '~/lib/redux/slices/asset-slice'
 import { DownloadPopover } from '~/components/asset/download-popover'
 import { AppSidebar } from '~/components/app-sidebar'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function SiteHeader() {
     const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -34,42 +22,31 @@ export function SiteHeader() {
 
     return (
         <>
-            <div className="text-white bg-red-800 p-1 text-xs text-center">
-                wanderer.moe is now skowt.cc and has had a complete rewrite! This is still under HEAVY development, so
-                bugs and issues WILL occur!
+            <div className="bg-destructive/5 border-b border-destructive/20 text-destructive p-3 text-xs text-center">
+                wanderer.moe is now skowt.cc with a completely new site! Heavy updates will be released over the next
+                week.
             </div>
-            <header className="bg-background sticky top-0 z-50 flex w-full items-center border-b">
-                <div className="flex h-(--header-height) w-full items-center gap-2 px-4">
-                    <AppSidebar open={sidebarOpen} onOpenChange={setSidebarOpen}>
-                        <Button className="h-8 w-8 mr-2" variant="ghost" size="icon">
-                            <MenuIcon className="h-4 w-4" />
-                        </Button>
-                    </AppSidebar>
-
-                    {/* <Link href="/" className="hover:cursor-pointer hover:bg-none px-3 p-2">
-                        <div className="flex font-semibold flex-row items-center gap-1">
-                            <Image src="/logo.png" alt="skowt.cc" width={24} height={24} />
-                        </div>
-                    </Link> */}
+            <header className="bg-card sticky top-0 z-50 flex w-full items-center border-b">
+                <div className="flex h-(--header-height) w-full items-center gap-2 px-6">
+                    <Link href="/" className="">
+                        <Image src="/logo.png" alt="Skowt Logo" width={32} height={32} className="h-8 w-8" />
+                    </Link>
 
                     <div className="flex-1" />
 
                     <div className="flex items-center gap-2">
-                        {}
                         <Button
                             variant={'outline'}
                             size="sm"
                             onClick={handleModeToggle}
-                            className="flex items-center gap-2"
+                            className="flex flex-row items-center gap-2"
                         >
                             {mode === 'view' ? (
                                 <>
-                                    <Eye className="h-4 w-4" />
                                     <span className="text-sm">Mode: View</span>
                                 </>
                             ) : (
                                 <>
-                                    <CheckSquare className="h-4 w-4" />
                                     <span className="text-sm">Mode: Multi-Select</span>
                                 </>
                             )}
@@ -77,17 +54,20 @@ export function SiteHeader() {
 
                         {selectedAssets.length > 0 && (
                             <>
-                                <Separator orientation="vertical" className="h-6" />
-
-                                {}
                                 <DownloadPopover>
-                                    <Button variant="outline" size="sm" className="flex items-center gap-2">
-                                        <Download className="h-4 w-4" />
+                                    <Button variant="outline" size="sm" className="flex flex-row items-center gap-2">
+                                        <HiDownload size={16} />
                                         <span className="text-sm">{selectedAssets.length}</span>
                                     </Button>
                                 </DownloadPopover>
                             </>
                         )}
+
+                        <AppSidebar open={sidebarOpen} onOpenChange={setSidebarOpen}>
+                            <Button variant="secondary" size="sm">
+                                <HiMenu size={16} />
+                            </Button>
+                        </AppSidebar>
                     </div>
                 </div>
             </header>

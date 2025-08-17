@@ -7,7 +7,7 @@ import { Button } from '~/components/ui/button'
 import { Loader2 } from 'lucide-react'
 
 export function AssetContent() {
-    const { viewMode, loading, error, assets, pagination, updateFilter } = useAssetContext()
+    const { viewMode, loading, error, assets } = useAssetContext()
 
     if (error) {
         return (

@@ -16,18 +16,27 @@ import { NavSecondary } from '~/components/nav-secondary'
 import { NavUser } from '~/components/nav-user'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '~/components/ui/sheet'
 // import { authClient } from '~/lib/auth/auth-client'
+import { RiDiscordLine, RiGithubLine } from 'react-icons/ri'
+import {
+    HiOutlineCog,
+    HiOutlineDownload,
+    HiOutlineHeart,
+    HiOutlineHome,
+    HiOutlineMenuAlt2,
+    HiOutlineUpload,
+} from 'react-icons/hi'
 
 const navData = {
     navSecondary: [
         {
             title: 'Discord',
             url: 'https://discord.gg/noid',
-            icon: UsersIcon,
+            icon: RiDiscordLine as any,
         },
         {
             title: 'GitHub',
             url: 'https://github.com/skowtcc',
-            icon: GitBranchIcon,
+            icon: RiGithubLine as any,
         },
     ],
     navigation: [
@@ -37,36 +46,36 @@ const navData = {
         {
             name: 'Home',
             url: '/',
-            icon: HomeIcon,
+            icon: HiOutlineHome,
         },
         {
             name: 'Download History',
             url: '/download-history',
-            icon: DownloadIcon,
+            icon: HiOutlineDownload,
             requiresLogin: true,
         },
         {
             name: 'Saved Assets',
             url: '/saved',
-            icon: HeartIcon,
+            icon: HiOutlineHeart,
             requiresLogin: true,
         },
         {
             name: 'Upload',
             url: '/upload',
-            icon: UploadIcon,
+            icon: HiOutlineUpload,
             requiresLogin: true,
             requiresContributor: true,
         },
         {
             name: 'Changelog',
             url: '/changelog',
-            icon: ListPlusIcon,
+            icon: HiOutlineMenuAlt2,
         },
         {
             name: 'Settings',
             url: '/settings',
-            icon: Settings2Icon,
+            icon: HiOutlineCog,
         },
     ],
 }
@@ -81,7 +90,7 @@ export function AppSidebar({ children, open, onOpenChange }: AppSidebarProps) {
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetTrigger asChild>{children}</SheetTrigger>
-            <SheetContent side="left" className="w-80 p-0">
+            <SheetContent side="right" className="w-80 p-0">
                 <SheetHeader>
                     <SheetTitle className="sr-only">Navigation</SheetTitle>
                 </SheetHeader>

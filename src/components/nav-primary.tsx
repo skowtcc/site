@@ -9,7 +9,7 @@ import { authClient } from '~/lib/auth/auth-client'
 type NavItem = {
     name: string
     url: string
-    icon: LucideIcon
+    icon: any // LucideIcon | React.ComponentType<React.SVGProps<SVGSVGElement>>
     requiresLogin?: boolean
     requiresContributor?: boolean
 }
