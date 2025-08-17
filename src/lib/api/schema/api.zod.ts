@@ -16,8 +16,7 @@ export namespace Endpoints {
                 tags: string
                 games: string
                 categories: string
-                page: string
-                limit: string
+                offset: string
                 sortBy: 'viewCount' | 'downloadCount' | 'uploadDate' | 'name'
                 sortOrder: 'asc' | 'desc'
             }>
@@ -43,12 +42,8 @@ export namespace Endpoints {
                 uploadedBy: { id: string; username: string | null; image: string | null }
             }>
             pagination: {
-                page: number
-                limit: number
-                total: number
-                totalPages: number
+                offset: number
                 hasNext: boolean
-                hasPrev: boolean
             }
         }
     }
@@ -221,8 +216,7 @@ export namespace Endpoints {
         requestFormat: 'json'
         parameters: {
             query: Partial<{
-                page: string
-                limit: string
+                offset: string
                 search: string
                 games: string
                 categories: string
@@ -252,12 +246,8 @@ export namespace Endpoints {
                 uploadedBy: { id: string; username: string | null; image: string | null }
             }>
             pagination: {
-                page: number
-                limit: number
-                total: number
-                totalPages: number
+                offset: number
                 hasNext: boolean
-                hasPrev: boolean
             }
         }
     }
@@ -312,7 +302,7 @@ export namespace Endpoints {
         path: '/user/download-history'
         requestFormat: 'json'
         parameters: {
-            query: Partial<{ page: string; limit: string }>
+            query: Partial<{ offset: string }>
         }
         response: {
             success: boolean
@@ -339,12 +329,8 @@ export namespace Endpoints {
                 }>
             }>
             pagination: {
-                page: number
-                limit: number
-                total: number
-                totalPages: number
+                offset: number
                 hasNext: boolean
-                hasPrev: boolean
             }
         }
     }

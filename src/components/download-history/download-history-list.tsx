@@ -17,7 +17,7 @@ export function DownloadHistoryList() {
     const [downloadHistory, setDownloadHistory] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
     const [loadingMore, setLoadingMore] = useState(false)
-    const [page, setPage] = useState(1)
+    const [offset, setOffset] = useState(0)
     const [hasMore, setHasMore] = useState(true)
 
     const { data: session } = authClient.useSession()
@@ -39,8 +39,7 @@ export function DownloadHistoryList() {
             try {
                 const response = await client.get(`/user/download-history`, {
                     query: {
-                        page: isLoadMore ? page.toString() : '1',
-                        limit: '20', // Default 20, max 50
+                        offset: (isLoadMore ? offset : 0).toString(),
                     },
                 })
 
@@ -53,10 +52,10 @@ export function DownloadHistoryList() {
                         )
                         return [...prev, ...uniqueNewHistory]
                     })
-                    setPage(prev => prev + 1)
+                    setOffset(prev => prev + 20)
                 } else {
                     setDownloadHistory(response.downloadHistory)
-                    setPage(1)
+                    setOffset(0)
                 }
 
                 setHasMore(response.pagination?.hasNext || false)
@@ -68,7 +67,7 @@ export function DownloadHistoryList() {
                 setLoadingMore(false)
             }
         },
-        [user, page, hasMore],
+        [user, offset, hasMore],
     )
 
     useEffect(() => {

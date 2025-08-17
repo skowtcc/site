@@ -18,7 +18,7 @@ export function Footer() {
                 <br />
                 Not affiliated with any of the games or companies listed on this site unless otherwise stated.
                 <br />
-                Please send takedown requests to support [at] originoid [dot] co
+                Please send takedown requests to marcel [at] originoid [dot] co
             </p>
         </div>
     )

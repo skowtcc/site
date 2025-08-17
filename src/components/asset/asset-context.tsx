@@ -12,8 +12,7 @@ export interface FilterState {
     selectedTags: string[]
     sortBy: 'downloadCount' | 'uploadDate' | 'viewCount' | 'name'
     sortOrder: 'asc' | 'desc'
-    page: number
-    limit: number
+    offset: number
 }
 
 export type ViewMode = 'grid' | 'list'
@@ -39,12 +38,8 @@ interface AssetContextType {
         color: string | null
     }>
     pagination: {
-        page: number
-        limit: number
-        total: number
-        totalPages: number
+        offset: number
         hasNext: boolean
-        hasPrev: boolean
     } | null
     loading: boolean
     loadingMore: boolean
@@ -64,8 +59,7 @@ export function AssetProvider({ children }: { children: ReactNode }) {
         selectedTags: [],
         sortBy: 'downloadCount',
         sortOrder: 'desc',
-        page: 1,
-        limit: 50,
+        offset: 0,
     })
 
     const [viewMode, setViewMode] = useState<ViewMode>('grid')
@@ -86,7 +80,7 @@ export function AssetProvider({ children }: { children: ReactNode }) {
         setFilters(prev => ({
             ...prev,
             [key]: value,
-            page: key !== 'page' ? 1 : (value as number),
+            offset: key !== 'offset' ? 0 : (value as number),
         }))
     }
 
@@ -98,8 +92,7 @@ export function AssetProvider({ children }: { children: ReactNode }) {
             selectedTags: [],
             sortBy: 'downloadCount',
             sortOrder: 'desc',
-            page: 1,
-            limit: 50,
+            offset: 0,
         })
     }
 
@@ -131,8 +124,7 @@ export function AssetProvider({ children }: { children: ReactNode }) {
 
             try {
                 const queryParams: Record<string, string> = {
-                    page: currentFilters.page.toString(),
-                    limit: currentFilters.limit.toString(),
+                    offset: currentFilters.offset.toString(),
                     sortBy: currentFilters.sortBy,
                     sortOrder: currentFilters.sortOrder,
                 }
@@ -198,7 +190,7 @@ export function AssetProvider({ children }: { children: ReactNode }) {
 
         const nextPageFilters = {
             ...filters,
-            page: pagination.page + 1,
+            offset: pagination.offset + 20,
         }
 
         await fetchAssets(nextPageFilters, true)
@@ -228,8 +220,7 @@ export function AssetProvider({ children }: { children: ReactNode }) {
             !arraysEqual(filters.selectedTags, lastFilters.selectedTags) ||
             filters.sortBy !== lastFilters.sortBy ||
             filters.sortOrder !== lastFilters.sortOrder ||
-            filters.page !== lastFilters.page ||
-            filters.limit !== lastFilters.limit
+            filters.offset !== lastFilters.offset
 
         if (initialLoadRef.current) {
             initialLoadRef.current = false

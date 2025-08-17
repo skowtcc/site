@@ -34,6 +34,10 @@ export function SiteHeader() {
 
     return (
         <>
+            <div className="text-white bg-red-800 p-1 text-xs text-center">
+                wanderer.moe is now skowt.cc and has had a complete rewrite! This is still under HEAVY development, so
+                bugs and issues WILL occur!
+            </div>
             <header className="bg-background sticky top-0 z-50 flex w-full items-center border-b">
                 <div className="flex h-(--header-height) w-full items-center gap-2 px-4">
                     <AppSidebar open={sidebarOpen} onOpenChange={setSidebarOpen}>

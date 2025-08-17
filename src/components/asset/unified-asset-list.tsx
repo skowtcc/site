@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { AssetItem } from './asset-item'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
@@ -56,6 +56,8 @@ interface FilterOption {
     id: string
     name: string
     slug?: string
+    categories?: Array<{ id: string; slug: string; name: string }>
+    disabled?: boolean
 }
 
 interface UnifiedAssetListProps {
@@ -79,7 +81,8 @@ function MultiSelectFilter({
     selected: string[]
     onSelectionChange: (selected: string[]) => void
 }) {
-    const handleToggle = (optionId: string) => {
+    const handleToggle = (optionId: string, disabled?: boolean) => {
+        if (disabled) return // Don't allow toggling disabled options
         const newSelected = selected.includes(optionId)
             ? selected.filter(id => id !== optionId)
             : [...selected, optionId]
@@ -96,16 +99,20 @@ function MultiSelectFilter({
                     <ScrollArea className={title === 'Tags' ? 'h-12' : 'h-64'}>
                         <div className="space-y-2 pr-4">
                             {options.map(option => (
-                                <div key={option.id} className="flex items-center space-x-2">
+                                <div
+                                    key={option.id}
+                                    className={`flex items-center space-x-2 ${option.disabled ? 'opacity-50' : ''}`}
+                                >
                                     <Checkbox
                                         id={`${title.toLowerCase()}-${option.id}`}
                                         checked={selected.includes(option.id)}
-                                        onCheckedChange={() => handleToggle(option.id)}
+                                        disabled={option.disabled}
+                                        onCheckedChange={() => handleToggle(option.id, option.disabled)}
                                     />
                                     {title === 'Games' && option.slug && (
                                         <Image
                                             src={`https://pack.skowt.cc/cdn-cgi/image/width=64,height=64,quality=75/game/${option.slug}-icon.png`}
-                                            className="rounded-md"
+                                            className={`rounded-md ${option.disabled ? 'grayscale' : ''}`}
                                             alt={option.name}
                                             width={20}
                                             height={20}
@@ -113,7 +120,7 @@ function MultiSelectFilter({
                                     )}
                                     <label
                                         htmlFor={`${title.toLowerCase()}-${option.id}`}
-                                        className="text-sm flex-1 cursor-pointer"
+                                        className={`text-sm flex-1 ${option.disabled ? 'cursor-not-allowed text-muted-foreground' : 'cursor-pointer'}`}
                                     >
                                         {option.name}
                                     </label>
@@ -144,8 +151,8 @@ export function UnifiedAssetList({
     const [assets, setAssets] = useState<Asset[]>([])
     const [loading, setLoading] = useState(false)
     const [loadingMore, setLoadingMore] = useState(false)
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-    const [page, setPage] = useState(1)
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>(endpoint === '/user/saved-assets' ? 'list' : 'grid')
+    const [offset, setOffset] = useState(0)
     const [hasMore, setHasMore] = useState(true)
     const [total, setTotal] = useState(0)
     const [initializedFromParams, setInitializedFromParams] = useState(false)
@@ -170,9 +177,58 @@ export function UnifiedAssetList({
     const { data: session } = authClient.useSession()
     const user = session?.user
 
+    // Computed options with disabled states based on current selection
+    const gamesWithDisabledState = useMemo(() => {
+        const gamesWithStates = availableGames.map(game => ({
+            ...game,
+            disabled:
+                filters.selectedCategories.length > 0 &&
+                (() => {
+                    const gameData = availableGames.find(g => g.id === game.id) as any
+                    if (gameData?.categories) {
+                        return !filters.selectedCategories.some(catId =>
+                            gameData.categories.some((cat: any) => cat.id === catId),
+                        )
+                    }
+                    return true
+                })(),
+        }))
+
+        // Sort: available options first, then disabled ones
+        return gamesWithStates.sort((a, b) => {
+            if (a.disabled && !b.disabled) return 1
+            if (!a.disabled && b.disabled) return -1
+            return a.name.localeCompare(b.name) // Alphabetical within each group
+        })
+    }, [availableGames, filters.selectedCategories])
+
+    const categoriesWithDisabledState = useMemo(() => {
+        const categoriesWithStates = availableCategories.map(category => ({
+            ...category,
+            disabled:
+                filters.selectedGames.length > 0 &&
+                (() => {
+                    return !filters.selectedGames.some(gameId => {
+                        const gameData = availableGames.find(g => g.id === gameId) as any
+                        if (gameData?.categories) {
+                            return gameData.categories.some((cat: any) => cat.id === category.id)
+                        }
+                        return false
+                    })
+                })(),
+        }))
+
+        // Sort: available options first, then disabled ones
+        return categoriesWithStates.sort((a, b) => {
+            if (a.disabled && !b.disabled) return 1
+            if (!a.disabled && b.disabled) return -1
+            return a.name.localeCompare(b.name) // Alphabetical within each group
+        })
+    }, [availableCategories, availableGames, filters.selectedGames])
+
     const updateFilter = <K extends keyof Filters>(key: K, value: Filters[K]) => {
         setFilters(prev => ({ ...prev, [key]: value }))
-        setPage(1) // Reset to first page when filters change
+        setOffset(0) // Reset to first page when filters change
         setAssets([]) // Clear assets when filters change
         setHasMore(true)
     }
@@ -253,6 +309,7 @@ export function UnifiedAssetList({
                     id: g.id,
                     name: g.name,
                     slug: g.slug,
+                    categories: g.categories || [],
                 }))
                 const categories = categoriesRes.categories.map((c: any) => ({
                     id: c.id,
@@ -289,14 +346,12 @@ export function UnifiedAssetList({
                 setLoadingMore(true)
             } else {
                 setLoading(true)
-                setPage(1) // Reset page when not loading more
             }
 
             try {
                 const params = new URLSearchParams()
-                const currentPage = isLoadMore ? page : 1
-                params.append('page', currentPage.toString())
-                params.append('limit', '20')
+                const currentOffset = isLoadMore ? offset : 0
+                params.append('offset', currentOffset.toString())
 
                 if (filters.searchQuery.trim()) {
                     params.append(endpoint === '/asset/search' ? 'name' : 'search', filters.searchQuery.trim())
@@ -347,13 +402,13 @@ export function UnifiedAssetList({
                         const uniqueNewAssets = newAssets.filter((asset: Asset) => !existingIds.has(asset.id))
                         return [...prev, ...uniqueNewAssets]
                     })
-                    setPage(prev => prev + 1)
+                    setOffset(prev => prev + 20)
                 } else {
                     setAssets(newAssets)
                 }
 
                 setHasMore(response.pagination?.hasNext || false)
-                setTotal(response.pagination?.total || 0)
+                // Note: total count is no longer provided in the new API response
             } catch (error) {
                 console.error('Failed to fetch assets:', error)
             } finally {
@@ -361,7 +416,7 @@ export function UnifiedAssetList({
                 setLoadingMore(false)
             }
         },
-        [page, filters, endpoint, availableGames, availableCategories, availableTags, hasMore],
+        [offset, filters, endpoint, availableGames, availableCategories, availableTags],
     )
 
     useEffect(() => {
@@ -417,7 +472,7 @@ export function UnifiedAssetList({
     return (
         <div className="flex flex-col 2xl:flex-row gap-6">
             {/* Filters Sidebar */}
-            <div className="2xl:w-80 w-full bg-card rounded-lg border p-4 pt-2 space-y-6 h-fit">
+            <div className="2xl:w-80 2xl:min-w-80 w-full bg-card rounded-lg border p-4 pt-2 space-y-6 h-fit 2xl:flex-shrink-0">
                 <div className="space-y-4">
                     <div className="relative py-2">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -431,14 +486,14 @@ export function UnifiedAssetList({
 
                     <MultiSelectFilter
                         title="Games"
-                        options={availableGames}
+                        options={gamesWithDisabledState}
                         selected={filters.selectedGames}
                         onSelectionChange={selected => updateFilter('selectedGames', selected)}
                     />
 
                     <MultiSelectFilter
                         title="Categories"
-                        options={availableCategories}
+                        options={categoriesWithDisabledState}
                         selected={filters.selectedCategories}
                         onSelectionChange={selected => updateFilter('selectedCategories', selected)}
                     />
@@ -485,33 +540,29 @@ export function UnifiedAssetList({
             </div>
 
             {/* Assets List */}
-            <div className="flex-1">
+            <div className="flex-1 min-w-0 overflow-hidden">
                 <div className="flex items-center justify-between mb-4">
-                    <div className="text-sm text-muted-foreground">
-                        {total > 0 && (
-                            <span>
-                                Showing {assets.length} of {total} assets
-                            </span>
-                        )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setViewMode('grid')}
-                            className={viewMode === 'grid' ? 'bg-muted' : ''}
-                        >
-                            <Grid className="h-4 w-4" />
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setViewMode('list')}
-                            className={viewMode === 'list' ? 'bg-muted' : ''}
-                        >
-                            <List className="h-4 w-4" />
-                        </Button>
-                    </div>
+                    <div className="text-sm text-muted-foreground"></div>
+                    {endpoint !== '/user/saved-assets' && (
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setViewMode('grid')}
+                                className={viewMode === 'grid' ? 'bg-muted' : ''}
+                            >
+                                <Grid className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setViewMode('list')}
+                                className={viewMode === 'list' ? 'bg-muted' : ''}
+                            >
+                                <List className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    )}
                 </div>
 
                 {loading ? (

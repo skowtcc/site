@@ -26,8 +26,7 @@ export function RecentlyUploadedCarousel() {
                     query: {
                         sortBy: 'uploadDate',
                         sortOrder: 'desc',
-                        limit: '10',
-                        page: '1',
+                        offset: '0',
                     },
                 })
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { AssetItem } from '../asset/asset-item'
 import { authClient } from '~/lib/auth/auth-client'
 import { client } from '~/lib/api/client'
@@ -9,7 +9,7 @@ import { Input } from '~/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~/components/ui/accordion'
 import { Checkbox } from '~/components/ui/checkbox'
-import { Search, Loader2, Grid, List } from 'lucide-react'
+import { Search, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import { useDebounce } from '~/hooks/use-debounce'
 
@@ -83,9 +83,10 @@ function MultiSelectAccordion({ title, options, selected, onSelectionChange }: M
 export function SavedAssetsList() {
     const [savedAssets, setSavedAssets] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
-    const [page, setPage] = useState(1)
-    const [pagination, setPagination] = useState<any>(null)
+    const [loadingMore, setLoadingMore] = useState(false)
+    // Force list view only for saved assets
+    const [offset, setOffset] = useState(0)
+    const [hasNext, setHasNext] = useState(false)
 
     // Filter options from saved assets
     const [availableGames, setAvailableGames] = useState<any[]>([])
@@ -108,110 +109,140 @@ export function SavedAssetsList() {
 
     const updateFilter = <K extends keyof SavedAssetsFilters>(key: K, value: SavedAssetsFilters[K]) => {
         setFilters(prev => ({ ...prev, [key]: value }))
-        setPage(1) // Reset to first page when filters change
+        setOffset(0) // Reset to first page when filters change
+        setSavedAssets([]) // Clear assets when filters change
+        setHasNext(false) // Reset hasNext to prevent loading more
     }
 
-    const fetchSavedAssets = useCallback(async () => {
-        if (!user) return
+    const fetchSavedAssetsRef = useRef<((isLoadMore?: boolean) => Promise<void>) | null>(null)
 
-        setLoading(true)
-        try {
-            const params = new URLSearchParams()
-            params.append('page', page.toString())
-            params.append('limit', '20')
+    const fetchSavedAssets = useCallback(
+        async (isLoadMore = false) => {
+            if (!user) return
+            if (!hasNext && isLoadMore) return
 
-            if (debouncedSearch) params.append('search', debouncedSearch)
-
-            // Convert IDs to slugs for API
-            if (filters.selectedGames.length > 0) {
-                const gameSlugs = filters.selectedGames
-                    .map(gameId => availableGames.find(game => game.id === gameId)?.slug)
-                    .filter(Boolean)
-                if (gameSlugs.length > 0) {
-                    params.append('games', gameSlugs.join(','))
-                }
+            if (isLoadMore) {
+                setLoadingMore(true)
+            } else {
+                setLoading(true)
             }
 
-            if (filters.selectedCategories.length > 0) {
-                const categorySlugs = filters.selectedCategories
-                    .map(categoryId => availableCategories.find(category => category.id === categoryId)?.slug)
-                    .filter(Boolean)
-                if (categorySlugs.length > 0) {
-                    params.append('categories', categorySlugs.join(','))
-                }
-            }
+            try {
+                const currentOffset = isLoadMore ? offset : 0
+                const params = new URLSearchParams()
+                params.append('offset', currentOffset.toString())
 
-            if (filters.selectedTags.length > 0) {
-                const tagSlugs = filters.selectedTags
-                    .map(tagId => availableTags.find(tag => tag.id === tagId)?.slug)
-                    .filter(Boolean)
-                if (tagSlugs.length > 0) {
-                    params.append('tags', tagSlugs.join(','))
-                }
-            }
-            params.append('sortBy', filters.sortBy)
-            params.append('sortOrder', filters.sortOrder)
+                if (debouncedSearch) params.append('search', debouncedSearch)
 
-            const response = await client.get(`/user/saved-assets`, {
-                query: Object.fromEntries(params),
-            })
-
-            setSavedAssets(response.savedAssets || [])
-            setPagination(response.pagination)
-
-            // Extract unique games, categories, and tags from all saved assets
-            // This would ideally come from a separate endpoint, but we'll work with what we have
-            const games = new Map()
-            const categories = new Map()
-            const tags = new Map()
-
-            if (response.savedAssets && response.savedAssets.length > 0) {
-                response.savedAssets.forEach((asset: any) => {
-                    if (!games.has(asset.gameId)) {
-                        games.set(asset.gameId, {
-                            id: asset.gameId,
-                            name: asset.gameName,
-                            slug: asset.gameSlug,
-                        })
+                // Convert IDs to slugs for API
+                if (filters.selectedGames.length > 0) {
+                    const gameSlugs = filters.selectedGames
+                        .map(gameId => availableGames.find(game => game.id === gameId)?.slug)
+                        .filter(Boolean)
+                    if (gameSlugs.length > 0) {
+                        params.append('games', gameSlugs.join(','))
                     }
-                    if (!categories.has(asset.categoryId)) {
-                        categories.set(asset.categoryId, {
-                            id: asset.categoryId,
-                            name: asset.categoryName,
-                            slug: asset.categorySlug,
-                        })
+                }
+
+                if (filters.selectedCategories.length > 0) {
+                    const categorySlugs = filters.selectedCategories
+                        .map(categoryId => availableCategories.find(category => category.id === categoryId)?.slug)
+                        .filter(Boolean)
+                    if (categorySlugs.length > 0) {
+                        params.append('categories', categorySlugs.join(','))
                     }
-                    asset.tags.forEach((tag: any) => {
-                        if (!tags.has(tag.id)) {
-                            tags.set(tag.id, {
-                                id: tag.id,
-                                name: tag.name,
-                                slug: tag.slug,
-                            })
-                        }
-                    })
+                }
+
+                if (filters.selectedTags.length > 0) {
+                    const tagSlugs = filters.selectedTags
+                        .map(tagId => availableTags.find(tag => tag.id === tagId)?.slug)
+                        .filter(Boolean)
+                    if (tagSlugs.length > 0) {
+                        params.append('tags', tagSlugs.join(','))
+                    }
+                }
+                params.append('sortBy', filters.sortBy)
+                params.append('sortOrder', filters.sortOrder)
+
+                const response = await client.get(`/user/saved-assets`, {
+                    query: Object.fromEntries(params),
                 })
 
-                // Only update if we're on the first page (to get all options)
-                if (
-                    page === 1 &&
-                    filters.selectedGames.length === 0 &&
-                    filters.selectedCategories.length === 0 &&
-                    filters.selectedTags.length === 0
-                ) {
-                    setAvailableGames(Array.from(games.values()))
-                    setAvailableCategories(Array.from(categories.values()))
-                    setAvailableTags(Array.from(tags.values()))
+                if (isLoadMore) {
+                    // Filter out duplicates when appending
+                    setSavedAssets(prev => {
+                        const existingIds = new Set(prev.map(a => a.id))
+                        const uniqueNewAssets = (response.savedAssets || []).filter(
+                            (asset: any) => !existingIds.has(asset.id),
+                        )
+                        return [...prev, ...uniqueNewAssets]
+                    })
+                    setOffset(prev => prev + 20)
+                } else {
+                    setSavedAssets(response.savedAssets || [])
                 }
+                setHasNext(response.pagination?.hasNext || false)
+
+                // Extract unique games, categories, and tags from all saved assets
+                // This would ideally come from a separate endpoint, but we'll work with what we have
+                const games = new Map()
+                const categories = new Map()
+                const tags = new Map()
+
+                if (response.savedAssets && response.savedAssets.length > 0) {
+                    response.savedAssets.forEach((asset: any) => {
+                        if (!games.has(asset.gameId)) {
+                            games.set(asset.gameId, {
+                                id: asset.gameId,
+                                name: asset.gameName,
+                                slug: asset.gameSlug,
+                            })
+                        }
+                        if (!categories.has(asset.categoryId)) {
+                            categories.set(asset.categoryId, {
+                                id: asset.categoryId,
+                                name: asset.categoryName,
+                                slug: asset.categorySlug,
+                            })
+                        }
+                        asset.tags.forEach((tag: any) => {
+                            if (!tags.has(tag.id)) {
+                                tags.set(tag.id, {
+                                    id: tag.id,
+                                    name: tag.name,
+                                    slug: tag.slug,
+                                })
+                            }
+                        })
+                    })
+
+                    // Only update if we're on the first page (to get all options)
+                    if (
+                        offset === 0 &&
+                        filters.selectedGames.length === 0 &&
+                        filters.selectedCategories.length === 0 &&
+                        filters.selectedTags.length === 0
+                    ) {
+                        setAvailableGames(Array.from(games.values()))
+                        setAvailableCategories(Array.from(categories.values()))
+                        setAvailableTags(Array.from(tags.values()))
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch saved assets:', error)
+            } finally {
+                setLoading(false)
+                setLoadingMore(false)
             }
-        } catch (error) {
-            console.error('Failed to fetch saved assets:', error)
-        } finally {
-            setLoading(false)
-        }
+        },
+        [user, availableGames, availableCategories, availableTags],
+    )
+
+    fetchSavedAssetsRef.current = fetchSavedAssets
+
+    useEffect(() => {
+        fetchSavedAssets(false)
     }, [
-        user,
-        page,
         debouncedSearch,
         filters.selectedGames,
         filters.selectedCategories,
@@ -220,9 +251,23 @@ export function SavedAssetsList() {
         filters.sortOrder,
     ])
 
+    // Infinite scroll handler
     useEffect(() => {
-        fetchSavedAssets()
-    }, [fetchSavedAssets])
+        const handleScroll = () => {
+            if (loadingMore || !hasNext || loading) return
+
+            const scrollPosition = window.innerHeight + window.scrollY
+            const documentHeight = document.documentElement.offsetHeight
+
+            // Load more when user is 200px from the bottom
+            if (scrollPosition >= documentHeight - 200) {
+                fetchSavedAssetsRef.current?.(true)
+            }
+        }
+
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [loadingMore, hasNext, loading])
 
     if (!user) {
         return null
@@ -308,37 +353,16 @@ export function SavedAssetsList() {
             <div className="flex-1">
                 <div className="flex items-center justify-between mb-4">
                     <div className="text-sm text-muted-foreground">
-                        {pagination && (
-                            <span>
-                                Showing {savedAssets.length} of {pagination.total} saved assets
-                            </span>
-                        )}
+                        {savedAssets.length > 0 && <span>Showing {savedAssets.length} saved assets</span>}
                     </div>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setViewMode('grid')}
-                            className={viewMode === 'grid' ? 'bg-muted' : ''}
-                        >
-                            <Grid className="h-4 w-4" />
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setViewMode('list')}
-                            className={viewMode === 'list' ? 'bg-muted' : ''}
-                        >
-                            <List className="h-4 w-4" />
-                        </Button>
-                    </div>
+                    {/* View mode buttons removed - always use list view */}
                 </div>
 
                 {loading ? (
                     <div className="flex items-center justify-center min-h-[400px]">
                         <Loader2 className="h-8 w-8 animate-spin" />
                     </div>
-                ) : savedAssets.length === 0 ? (
+                ) : savedAssets.length === 0 && !loadingMore ? (
                     <div className="text-center text-muted-foreground min-h-[400px] flex items-center justify-center">
                         <div>
                             <p className="text-lg font-medium mb-2">No saved assets found</p>
@@ -347,44 +371,17 @@ export function SavedAssetsList() {
                     </div>
                 ) : (
                     <>
-                        <div
-                            className={
-                                viewMode === 'grid'
-                                    ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'
-                                    : 'flex flex-col gap-4'
-                            }
-                        >
+                        <div className="flex flex-col gap-4 min-h-[400px]">
                             {savedAssets.map(asset => (
-                                <AssetItem
-                                    key={asset.id}
-                                    asset={asset}
-                                    variant={viewMode === 'grid' ? 'card' : 'list'}
-                                />
+                                <AssetItem key={asset.id} asset={asset} variant="list" />
                             ))}
                         </div>
 
-                        {}
-                        {pagination && pagination.totalPages > 1 && (
-                            <div className="flex items-center justify-center gap-2 mt-6">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setPage(page - 1)}
-                                    disabled={!pagination.hasPrev}
-                                >
-                                    Previous
-                                </Button>
-                                <span className="text-sm text-muted-foreground">
-                                    Page {page} of {pagination.totalPages}
-                                </span>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setPage(page + 1)}
-                                    disabled={!pagination.hasNext}
-                                >
-                                    Next
-                                </Button>
+                        {/* Loading indicator for infinite scroll */}
+                        {loadingMore && (
+                            <div className="flex items-center justify-center py-8">
+                                <Loader2 className="h-6 w-6 animate-spin" />
+                                <span className="ml-2 text-sm text-muted-foreground">Loading more assets...</span>
                             </div>
                         )}
                     </>
