@@ -43,16 +43,18 @@ export default function PrivacyPolicyPage() {
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">1. Introduction</h2>
                             <p className="text-muted-foreground mb-3">
-                                At skowt.cc, we take your privacy seriously. This Privacy Policy explains how we collect, 
-                                use, and protect your personal information. We are committed to GDPR compliance and maintaining 
-                                the highest standards of data protection.
+                                At skowt.cc, we take your privacy seriously. This Privacy Policy explains how we
+                                collect, use, and protect your personal information. We are committed to GDPR compliance
+                                and maintaining the highest standards of data protection.
                             </p>
                         </section>
 
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">2. Information We Collect</h2>
-                            <p className="text-muted-foreground mb-3">We only collect necessary information to provide our service:</p>
-                            
+                            <p className="text-muted-foreground mb-3">
+                                We only collect necessary information to provide our service:
+                            </p>
+
                             <h3 className="text-lg font-medium mt-4 mb-2">Account Information (via Discord OAuth)</h3>
                             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
                                 <li>Discord username and ID</li>
@@ -102,8 +104,8 @@ export default function PrivacyPolicyPage() {
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">5. Data Storage and Security</h2>
                             <p className="text-muted-foreground mb-3">
-                                Your data is stored securely using industry-standard encryption. 
-                                We implement appropriate technical and organizational measures to protect your personal information 
+                                Your data is stored securely using industry-standard encryption. We implement
+                                appropriate technical and organizational measures to protect your personal information
                                 against unauthorized access, alteration, disclosure, or destruction.
                             </p>
                             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
@@ -117,12 +119,17 @@ export default function PrivacyPolicyPage() {
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">6. Cookies</h2>
                             <p className="text-muted-foreground mb-3">
-                                We only use essential first-party cookies required for authentication and session management. 
-                                These cookies are necessary for the website to function and cannot be disabled.
+                                We only use essential first-party cookies required for authentication and session
+                                management. These cookies are necessary for the website to function and cannot be
+                                disabled.
                             </p>
                             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-                                <li><strong>Session cookies:</strong> To keep you logged in</li>
-                                <li><strong>Preference cookies:</strong> To remember your settings (theme, layout)</li>
+                                <li>
+                                    <strong>Session cookies:</strong> To keep you logged in
+                                </li>
+                                <li>
+                                    <strong>Preference cookies:</strong> To remember your settings (theme, layout)
+                                </li>
                             </ul>
                             <p className="text-muted-foreground mt-3">
                                 We do NOT use any third-party cookies or tracking cookies.
@@ -133,15 +140,29 @@ export default function PrivacyPolicyPage() {
                             <h2 className="text-xl font-semibold mb-3">7. Your Rights (GDPR Compliance)</h2>
                             <p className="text-muted-foreground mb-3">Under GDPR, you have the following rights:</p>
                             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-                                <li><strong>Right to Access:</strong> Request a copy of your personal data</li>
-                                <li><strong>Right to Rectification:</strong> Request correction of inaccurate data</li>
-                                <li><strong>Right to Erasure:</strong> Request deletion of your account and data</li>
-                                <li><strong>Right to Data Portability:</strong> Receive your data in a portable format</li>
-                                <li><strong>Right to Object:</strong> Object to certain types of processing</li>
-                                <li><strong>Right to Restrict Processing:</strong> Request limited processing of your data</li>
+                                <li>
+                                    <strong>Right to Access:</strong> Request a copy of your personal data
+                                </li>
+                                <li>
+                                    <strong>Right to Rectification:</strong> Request correction of inaccurate data
+                                </li>
+                                <li>
+                                    <strong>Right to Erasure:</strong> Request deletion of your account and data
+                                </li>
+                                <li>
+                                    <strong>Right to Data Portability:</strong> Receive your data in a portable format
+                                </li>
+                                <li>
+                                    <strong>Right to Object:</strong> Object to certain types of processing
+                                </li>
+                                <li>
+                                    <strong>Right to Restrict Processing:</strong> Request limited processing of your
+                                    data
+                                </li>
                             </ul>
                             <p className="text-muted-foreground mt-3">
-                                To exercise any of these rights, please contact us through the information in our footer.
+                                To exercise any of these rights, please contact us through the information in our
+                                footer.
                             </p>
                         </section>
 
@@ -160,12 +181,14 @@ export default function PrivacyPolicyPage() {
 
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">9. Third-Party Services</h2>
-                            <p className="text-muted-foreground mb-3">
-                                We use minimal third-party services:
-                            </p>
+                            <p className="text-muted-foreground mb-3">We use minimal third-party services:</p>
                             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-                                <li><strong>Discord OAuth:</strong> For authentication only</li>
-                                <li><strong>Cloudflare:</strong> For DDoS protection and CDN (no user tracking)</li>
+                                <li>
+                                    <strong>Discord OAuth:</strong> For authentication only
+                                </li>
+                                <li>
+                                    <strong>Cloudflare:</strong> For DDoS protection and CDN (no user tracking)
+                                </li>
                             </ul>
                             <p className="text-muted-foreground mt-3">
                                 These services are selected for their strong privacy practices and GDPR compliance.
@@ -175,36 +198,36 @@ export default function PrivacyPolicyPage() {
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">10. Children's Privacy</h2>
                             <p className="text-muted-foreground mb-3">
-                                Our Service is not directed to individuals under 13 years of age. 
-                                We do not knowingly collect personal information from children under 13. 
-                                If you become aware that a child has provided us with personal information, 
-                                please contact us immediately.
+                                Our Service is not directed to individuals under 13 years of age. We do not knowingly
+                                collect personal information from children under 13. If you become aware that a child
+                                has provided us with personal information, please contact us immediately.
                             </p>
                         </section>
 
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">11. International Data Transfers</h2>
                             <p className="text-muted-foreground mb-3">
-                                Your data may be processed in countries other than your own. 
-                                We ensure that any international transfers comply with GDPR requirements 
-                                and that your data receives the same level of protection.
+                                Your data may be processed in countries other than your own. We ensure that any
+                                international transfers comply with GDPR requirements and that your data receives the
+                                same level of protection.
                             </p>
                         </section>
 
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">12. Changes to This Policy</h2>
                             <p className="text-muted-foreground mb-3">
-                                We may update this Privacy Policy from time to time. 
-                                We will notify you of any significant changes by posting a notice on our website. 
-                                Your continued use of the Service after changes indicates acceptance.
+                                We may update this Privacy Policy from time to time. We will notify you of any
+                                significant changes by posting a notice on our website. Your continued use of the
+                                Service after changes indicates acceptance.
                             </p>
                         </section>
 
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">13. Data Breach Notification</h2>
                             <p className="text-muted-foreground mb-3">
-                                In the unlikely event of a data breach, we will notify affected users within 72 hours 
-                                in accordance with GDPR requirements. Notifications will be sent via email and posted on our website.
+                                In the unlikely event of a data breach, we will notify affected users within 72 hours in
+                                accordance with GDPR requirements. Notifications will be sent via email and posted on
+                                our website.
                             </p>
                         </section>
 

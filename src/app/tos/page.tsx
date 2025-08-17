@@ -43,15 +43,15 @@ export default function TermsOfServicePage() {
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">1. Acceptance of Terms</h2>
                             <p className="text-muted-foreground mb-3">
-                                By accessing and using skowt.cc ("the Service"), you agree to be bound by these Terms of Service. 
-                                If you do not agree to these terms, please do not use our Service.
+                                By accessing and using skowt.cc ("the Service"), you agree to be bound by these Terms of
+                                Service. If you do not agree to these terms, please do not use our Service.
                             </p>
                         </section>
 
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">2. Description of Service</h2>
                             <p className="text-muted-foreground mb-3">
-                                skowt.cc provides a platform for sharing and downloading game assets and modifications. 
+                                skowt.cc provides a platform for sharing and downloading game assets and modifications.
                                 Users can upload, browse, and download content shared by the community.
                             </p>
                         </section>
@@ -71,7 +71,10 @@ export default function TermsOfServicePage() {
                             <h2 className="text-xl font-semibold mb-3">4. User Content</h2>
                             <p className="text-muted-foreground mb-3">By uploading content to skowt.cc, you:</p>
                             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-                                <li>Grant us a non-exclusive, worldwide, royalty-free license to host and distribute your content</li>
+                                <li>
+                                    Grant us a non-exclusive, worldwide, royalty-free license to host and distribute
+                                    your content
+                                </li>
                                 <li>Warrant that you have the right to upload and share the content</li>
                                 <li>Agree that your content does not violate any third-party rights</li>
                                 <li>Understand that content may be removed if it violates our policies</li>
@@ -94,33 +97,34 @@ export default function TermsOfServicePage() {
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">6. Intellectual Property</h2>
                             <p className="text-muted-foreground mb-3">
-                                All content uploaded remains the property of the original creators. 
-                                skowt.cc does not claim ownership of user-uploaded content. 
-                                However, we respect the intellectual property rights of game developers and will respond to valid takedown requests.
+                                All content uploaded remains the property of the original creators. skowt.cc does not
+                                claim ownership of user-uploaded content. However, we respect the intellectual property
+                                rights of game developers and will respond to valid takedown requests.
                             </p>
                         </section>
 
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">7. Privacy and Data Protection</h2>
                             <p className="text-muted-foreground mb-3">
-                                Your use of our Service is also governed by our Privacy Policy. 
-                                We are committed to protecting your privacy and complying with GDPR and other applicable data protection laws.
+                                Your use of our Service is also governed by our Privacy Policy. We are committed to
+                                protecting your privacy and complying with GDPR and other applicable data protection
+                                laws.
                             </p>
                         </section>
 
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">8. Disclaimers and Limitations of Liability</h2>
                             <p className="text-muted-foreground mb-3">
-                                THE SERVICE IS PROVIDED "AS IS" WITHOUT WARRANTIES OF ANY KIND. 
-                                We do not guarantee the accuracy, completeness, or usefulness of any content. 
-                                We are not liable for any damages arising from your use of the Service or content downloaded from it.
+                                THE SERVICE IS PROVIDED "AS IS" WITHOUT WARRANTIES OF ANY KIND. We do not guarantee the
+                                accuracy, completeness, or usefulness of any content. We are not liable for any damages
+                                arising from your use of the Service or content downloaded from it.
                             </p>
                         </section>
 
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">9. Indemnification</h2>
                             <p className="text-muted-foreground mb-3">
-                                You agree to indemnify and hold harmless skowt.cc and its operators from any claims, 
+                                You agree to indemnify and hold harmless skowt.cc and its operators from any claims,
                                 damages, or expenses arising from your use of the Service or violation of these Terms.
                             </p>
                         </section>
@@ -128,31 +132,32 @@ export default function TermsOfServicePage() {
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">10. Modifications to Terms</h2>
                             <p className="text-muted-foreground mb-3">
-                                We reserve the right to modify these Terms at any time. 
-                                Continued use of the Service after changes constitutes acceptance of the new Terms.
+                                We reserve the right to modify these Terms at any time. Continued use of the Service
+                                after changes constitutes acceptance of the new Terms.
                             </p>
                         </section>
 
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">11. Termination</h2>
                             <p className="text-muted-foreground mb-3">
-                                We may terminate or suspend your account at any time for violation of these Terms. 
-                                You may also delete your account at any time through the account settings.
+                                We may terminate or suspend your account at any time for violation of these Terms. You
+                                may also delete your account at any time through the account settings.
                             </p>
                         </section>
 
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">12. Governing Law</h2>
                             <p className="text-muted-foreground mb-3">
-                                These Terms are governed by the laws of the jurisdiction where our company is registered. 
-                                Any disputes shall be resolved in the courts of that jurisdiction.
+                                These Terms are governed by the laws of the jurisdiction where our company is
+                                registered. Any disputes shall be resolved in the courts of that jurisdiction.
                             </p>
                         </section>
 
                         <section className="mb-6">
                             <h2 className="text-xl font-semibold mb-3">13. Contact Information</h2>
                             <p className="text-muted-foreground">
-                                For questions about these Terms, please contact us through the information provided in our website footer.
+                                For questions about these Terms, please contact us through the information provided in
+                                our website footer.
                             </p>
                         </section>
                     </CardContent>

@@ -68,11 +68,11 @@ interface UnifiedAssetListProps {
 }
 
 // Reusable filter component
-function MultiSelectFilter({ 
-    title, 
-    options, 
-    selected, 
-    onSelectionChange 
+function MultiSelectFilter({
+    title,
+    options,
+    selected,
+    onSelectionChange,
 }: {
     title: string
     options: FilterOption[]
@@ -138,7 +138,7 @@ export function UnifiedAssetList({
         { value: 'viewCount', label: 'Views' },
     ],
     defaultSortBy = 'uploadDate',
-    requireAuth = false
+    requireAuth = false,
 }: UnifiedAssetListProps) {
     // State
     const [assets, setAssets] = useState<Asset[]>([])
@@ -149,12 +149,12 @@ export function UnifiedAssetList({
     const [hasMore, setHasMore] = useState(true)
     const [total, setTotal] = useState(0)
     const [initializedFromParams, setInitializedFromParams] = useState(false)
-    
+
     // Filter options
     const [availableGames, setAvailableGames] = useState<FilterOption[]>([])
     const [availableCategories, setAvailableCategories] = useState<FilterOption[]>([])
     const [availableTags, setAvailableTags] = useState<FilterOption[]>([])
-    
+
     const [filters, setFilters] = useState<Filters>({
         searchQuery: '',
         selectedGames: [],
@@ -177,64 +177,67 @@ export function UnifiedAssetList({
         setHasMore(true)
     }
 
-    const initializeFiltersFromSearchParams = useCallback((games: FilterOption[], categories: FilterOption[], tags: FilterOption[]) => {
-        const initialFilters: Partial<Filters> = {}
-        
-        // Parse search query (supports both 'search' and 'name' params)
-        const searchQuery = searchParams?.get('search') || searchParams?.get('name') || ''
-        if (searchQuery) {
-            initialFilters.searchQuery = searchQuery
-        }
-        
-        // Parse games - convert slugs to IDs
-        const gamesSlugs = searchParams?.get('games')?.toLowerCase().split(',') || []
-        if (gamesSlugs.length > 0 && gamesSlugs[0] !== '') {
-            const gameIds = gamesSlugs
-                .map(slug => games.find(g => g.slug === slug.trim())?.id)
-                .filter(Boolean) as string[]
-            if (gameIds.length > 0) {
-                initialFilters.selectedGames = gameIds
+    const initializeFiltersFromSearchParams = useCallback(
+        (games: FilterOption[], categories: FilterOption[], tags: FilterOption[]) => {
+            const initialFilters: Partial<Filters> = {}
+
+            // Parse search query (supports both 'search' and 'name' params)
+            const searchQuery = searchParams?.get('search') || searchParams?.get('name') || ''
+            if (searchQuery) {
+                initialFilters.searchQuery = searchQuery
             }
-        }
-        
-        // Parse categories - convert slugs to IDs
-        const categorySlugs = searchParams?.get('categories')?.toLowerCase().split(',') || []
-        if (categorySlugs.length > 0 && categorySlugs[0] !== '') {
-            const categoryIds = categorySlugs
-                .map(slug => categories.find(c => c.slug === slug.trim())?.id)
-                .filter(Boolean) as string[]
-            if (categoryIds.length > 0) {
-                initialFilters.selectedCategories = categoryIds
+
+            // Parse games - convert slugs to IDs
+            const gamesSlugs = searchParams?.get('games')?.toLowerCase().split(',') || []
+            if (gamesSlugs.length > 0 && gamesSlugs[0] !== '') {
+                const gameIds = gamesSlugs
+                    .map(slug => games.find(g => g.slug === slug.trim())?.id)
+                    .filter(Boolean) as string[]
+                if (gameIds.length > 0) {
+                    initialFilters.selectedGames = gameIds
+                }
             }
-        }
-        
-        // Parse tags - convert slugs to IDs
-        const tagSlugs = searchParams?.get('tags')?.toLowerCase().split(',') || []
-        if (tagSlugs.length > 0 && tagSlugs[0] !== '') {
-            const tagIds = tagSlugs
-                .map(slug => tags.find(t => t.slug === slug.trim())?.id)
-                .filter(Boolean) as string[]
-            if (tagIds.length > 0) {
-                initialFilters.selectedTags = tagIds
+
+            // Parse categories - convert slugs to IDs
+            const categorySlugs = searchParams?.get('categories')?.toLowerCase().split(',') || []
+            if (categorySlugs.length > 0 && categorySlugs[0] !== '') {
+                const categoryIds = categorySlugs
+                    .map(slug => categories.find(c => c.slug === slug.trim())?.id)
+                    .filter(Boolean) as string[]
+                if (categoryIds.length > 0) {
+                    initialFilters.selectedCategories = categoryIds
+                }
             }
-        }
-        
-        // Parse sort options
-        const sortBy = searchParams?.get('sortBy')
-        if (sortBy && ['uploadDate', 'name', 'downloadCount', 'viewCount', 'savedAt'].includes(sortBy)) {
-            initialFilters.sortBy = sortBy
-        }
-        
-        const sortOrder = searchParams?.get('sortOrder')
-        if (sortOrder && ['asc', 'desc'].includes(sortOrder)) {
-            initialFilters.sortOrder = sortOrder as 'asc' | 'desc'
-        }
-        
-        // Apply the initial filters if any were found
-        if (Object.keys(initialFilters).length > 0) {
-            setFilters(prev => ({ ...prev, ...initialFilters }))
-        }
-    }, [searchParams])
+
+            // Parse tags - convert slugs to IDs
+            const tagSlugs = searchParams?.get('tags')?.toLowerCase().split(',') || []
+            if (tagSlugs.length > 0 && tagSlugs[0] !== '') {
+                const tagIds = tagSlugs
+                    .map(slug => tags.find(t => t.slug === slug.trim())?.id)
+                    .filter(Boolean) as string[]
+                if (tagIds.length > 0) {
+                    initialFilters.selectedTags = tagIds
+                }
+            }
+
+            // Parse sort options
+            const sortBy = searchParams?.get('sortBy')
+            if (sortBy && ['uploadDate', 'name', 'downloadCount', 'viewCount', 'savedAt'].includes(sortBy)) {
+                initialFilters.sortBy = sortBy
+            }
+
+            const sortOrder = searchParams?.get('sortOrder')
+            if (sortOrder && ['asc', 'desc'].includes(sortOrder)) {
+                initialFilters.sortOrder = sortOrder as 'asc' | 'desc'
+            }
+
+            // Apply the initial filters if any were found
+            if (Object.keys(initialFilters).length > 0) {
+                setFilters(prev => ({ ...prev, ...initialFilters }))
+            }
+        },
+        [searchParams],
+    )
 
     // Fetch metadata (games, categories, tags) on mount
     useEffect(() => {
@@ -243,29 +246,29 @@ export function UnifiedAssetList({
                 const [gamesRes, categoriesRes, tagsRes] = await Promise.all([
                     client.get('/game/all'),
                     client.get('/category/all'),
-                    client.get('/tag/all')
+                    client.get('/tag/all'),
                 ])
-                
+
                 const games = gamesRes.games.map((g: any) => ({
                     id: g.id,
                     name: g.name,
-                    slug: g.slug
+                    slug: g.slug,
                 }))
                 const categories = categoriesRes.categories.map((c: any) => ({
                     id: c.id,
                     name: c.name,
-                    slug: c.slug
+                    slug: c.slug,
                 }))
                 const tags = tagsRes.tags.map((t: any) => ({
                     id: t.id,
                     name: t.name,
-                    slug: t.slug
+                    slug: t.slug,
                 }))
-                
+
                 setAvailableGames(games)
                 setAvailableCategories(categories)
                 setAvailableTags(tags)
-                
+
                 // Initialize filters from URL search params only once
                 if (!initializedFromParams) {
                     initializeFiltersFromSearchParams(games, categories, tags)
@@ -278,115 +281,126 @@ export function UnifiedAssetList({
         fetchMetadata()
     }, [])
 
-    const fetchAssets = useCallback(async (isLoadMore = false) => {
-        if (!hasMore && isLoadMore) return
-        
-        if (isLoadMore) {
-            setLoadingMore(true)
-        } else {
-            setLoading(true)
-            setPage(1) // Reset page when not loading more
-        }
-        
-        try {
-            const params = new URLSearchParams()
-            const currentPage = isLoadMore ? page : 1
-            params.append('page', currentPage.toString())
-            params.append('limit', '20')
-            
-            if (filters.searchQuery.trim()) {
-                params.append(endpoint === '/asset/search' ? 'name' : 'search', filters.searchQuery.trim())
-            }
-            
-            // Convert IDs to slugs for API
-            if (filters.selectedGames.length > 0) {
-                const gameSlugs = filters.selectedGames
-                    .map(gameId => availableGames.find(game => game.id === gameId)?.slug)
-                    .filter(Boolean)
-                if (gameSlugs.length > 0) {
-                    params.append('games', gameSlugs.join(','))
-                }
-            }
-            
-            if (filters.selectedCategories.length > 0) {
-                const categorySlugs = filters.selectedCategories
-                    .map(categoryId => availableCategories.find(category => category.id === categoryId)?.slug)
-                    .filter(Boolean)
-                if (categorySlugs.length > 0) {
-                    params.append('categories', categorySlugs.join(','))
-                }
-            }
-            
-            if (filters.selectedTags.length > 0) {
-                const tagSlugs = filters.selectedTags
-                    .map(tagId => availableTags.find(tag => tag.id === tagId)?.slug)
-                    .filter(Boolean)
-                if (tagSlugs.length > 0) {
-                    params.append('tags', tagSlugs.join(','))
-                }
-            }
-            
-            params.append('sortBy', filters.sortBy)
-            params.append('sortOrder', filters.sortOrder)
+    const fetchAssets = useCallback(
+        async (isLoadMore = false) => {
+            if (!hasMore && isLoadMore) return
 
-            const response = await client.get(endpoint, {
-                query: Object.fromEntries(params)
-            }) as any
-            
-            const assetKey = endpoint === '/asset/search' ? 'assets' : 'savedAssets'
-            const newAssets = response[assetKey] || []
-            
             if (isLoadMore) {
-                // Filter out duplicates when appending
-                setAssets(prev => {
-                    const existingIds = new Set(prev.map(a => a.id))
-                    const uniqueNewAssets = newAssets.filter((asset: Asset) => !existingIds.has(asset.id))
-                    return [...prev, ...uniqueNewAssets]
-                })
-                setPage(prev => prev + 1)
+                setLoadingMore(true)
             } else {
-                setAssets(newAssets)
+                setLoading(true)
+                setPage(1) // Reset page when not loading more
             }
-            
-            setHasMore(response.pagination?.hasNext || false)
-            setTotal(response.pagination?.total || 0)
-        } catch (error) {
-            console.error('Failed to fetch assets:', error)
-        } finally {
-            setLoading(false)
-            setLoadingMore(false)
-        }
-    }, [page, filters, endpoint, availableGames, availableCategories, availableTags, hasMore])
+
+            try {
+                const params = new URLSearchParams()
+                const currentPage = isLoadMore ? page : 1
+                params.append('page', currentPage.toString())
+                params.append('limit', '20')
+
+                if (filters.searchQuery.trim()) {
+                    params.append(endpoint === '/asset/search' ? 'name' : 'search', filters.searchQuery.trim())
+                }
+
+                // Convert IDs to slugs for API
+                if (filters.selectedGames.length > 0) {
+                    const gameSlugs = filters.selectedGames
+                        .map(gameId => availableGames.find(game => game.id === gameId)?.slug)
+                        .filter(Boolean)
+                    if (gameSlugs.length > 0) {
+                        params.append('games', gameSlugs.join(','))
+                    }
+                }
+
+                if (filters.selectedCategories.length > 0) {
+                    const categorySlugs = filters.selectedCategories
+                        .map(categoryId => availableCategories.find(category => category.id === categoryId)?.slug)
+                        .filter(Boolean)
+                    if (categorySlugs.length > 0) {
+                        params.append('categories', categorySlugs.join(','))
+                    }
+                }
+
+                if (filters.selectedTags.length > 0) {
+                    const tagSlugs = filters.selectedTags
+                        .map(tagId => availableTags.find(tag => tag.id === tagId)?.slug)
+                        .filter(Boolean)
+                    if (tagSlugs.length > 0) {
+                        params.append('tags', tagSlugs.join(','))
+                    }
+                }
+
+                params.append('sortBy', filters.sortBy)
+                params.append('sortOrder', filters.sortOrder)
+
+                const response = (await client.get(endpoint, {
+                    query: Object.fromEntries(params),
+                })) as any
+
+                const assetKey = endpoint === '/asset/search' ? 'assets' : 'savedAssets'
+                const newAssets = response[assetKey] || []
+
+                if (isLoadMore) {
+                    // Filter out duplicates when appending
+                    setAssets(prev => {
+                        const existingIds = new Set(prev.map(a => a.id))
+                        const uniqueNewAssets = newAssets.filter((asset: Asset) => !existingIds.has(asset.id))
+                        return [...prev, ...uniqueNewAssets]
+                    })
+                    setPage(prev => prev + 1)
+                } else {
+                    setAssets(newAssets)
+                }
+
+                setHasMore(response.pagination?.hasNext || false)
+                setTotal(response.pagination?.total || 0)
+            } catch (error) {
+                console.error('Failed to fetch assets:', error)
+            } finally {
+                setLoading(false)
+                setLoadingMore(false)
+            }
+        },
+        [page, filters, endpoint, availableGames, availableCategories, availableTags, hasMore],
+    )
 
     useEffect(() => {
         if (availableGames.length > 0 || availableCategories.length > 0 || availableTags.length > 0) {
             fetchAssets(false)
         }
-    }, [filters.searchQuery, filters.selectedGames, filters.selectedCategories, filters.selectedTags, filters.sortBy, filters.sortOrder, availableGames, availableCategories, availableTags])
+    }, [
+        filters.searchQuery,
+        filters.selectedGames,
+        filters.selectedCategories,
+        filters.selectedTags,
+        filters.sortBy,
+        filters.sortOrder,
+        availableGames,
+        availableCategories,
+        availableTags,
+    ])
 
     // Infinite scroll handler
     useEffect(() => {
         const handleScroll = () => {
             if (loadingMore || !hasMore || loading) return
-            
+
             const scrollPosition = window.innerHeight + window.scrollY
             const documentHeight = document.documentElement.offsetHeight
-            
+
             // Load more when user is 200px from the bottom
             if (scrollPosition >= documentHeight - 200) {
                 fetchAssets(true)
             }
         }
-        
+
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [loadingMore, hasMore, loading, fetchAssets])
 
-
     // Adjust sort options for saved assets
-    const adjustedSortOptions = endpoint === '/user/saved-assets' 
-        ? [{ value: 'savedAt', label: 'Date Saved' }, ...sortOptions]
-        : sortOptions
+    const adjustedSortOptions =
+        endpoint === '/user/saved-assets' ? [{ value: 'savedAt', label: 'Date Saved' }, ...sortOptions] : sortOptions
 
     // Show auth required message if needed (after all hooks)
     if (requireAuth && !user) {
@@ -475,7 +489,9 @@ export function UnifiedAssetList({
                 <div className="flex items-center justify-between mb-4">
                     <div className="text-sm text-muted-foreground">
                         {total > 0 && (
-                            <span>Showing {assets.length} of {total} assets</span>
+                            <span>
+                                Showing {assets.length} of {total} assets
+                            </span>
                         )}
                     </div>
                     <div className="flex items-center gap-2">
@@ -511,12 +527,19 @@ export function UnifiedAssetList({
                     </div>
                 ) : (
                     <>
-                        <div className={viewMode === 'grid' 
-                            ? 'columns-1 md:columns-2 xl:columns-3 2xl:columns-4 gap-4 space-y-4' 
-                            : 'flex flex-col gap-4'
-                        }>
+                        <div
+                            className={
+                                viewMode === 'grid'
+                                    ? 'columns-1 md:columns-2 xl:columns-3 2xl:columns-4 gap-4 space-y-4'
+                                    : 'flex flex-col gap-4'
+                            }
+                        >
                             {assets.map(asset => (
-                                <AssetItem key={asset.id} asset={asset} variant={viewMode === 'grid' ? 'card' : 'list'} />
+                                <AssetItem
+                                    key={asset.id}
+                                    asset={asset}
+                                    variant={viewMode === 'grid' ? 'card' : 'list'}
+                                />
                             ))}
                         </div>
 
@@ -527,12 +550,10 @@ export function UnifiedAssetList({
                                 <span className="ml-2 text-sm text-muted-foreground">Loading more assets...</span>
                             </div>
                         )}
-                        
+
                         {/* End of results message */}
                         {!hasMore && assets.length > 0 && (
-                            <div className="text-center py-8 text-sm text-muted-foreground">
-                                No more assets to load
-                            </div>
+                            <div className="text-center py-8 text-sm text-muted-foreground">No more assets to load</div>
                         )}
                     </>
                 )}

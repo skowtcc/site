@@ -89,7 +89,7 @@ function AssetApprovalQueue() {
         <div>
             <h2 className="text-lg font-semibold mb-4">Asset Approval Queue</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {assetApprovalList.map((asset) => (
+                {assetApprovalList.map(asset => (
                     <div
                         className="bg-card p-4 text-muted-foreground flex flex-col gap-1 rounded-lg border"
                         key={asset.id}
@@ -103,7 +103,7 @@ function AssetApprovalQueue() {
                                 <p className="text-sm">Submitted by {asset.uploadedBy.username}</p>
                                 <p className="text-sm">Game: {asset.game.name}</p>
                                 <p className="text-sm">Category: {asset.category.name}</p>
-                                <p className="text-sm">Tags: {asset.tags.map((tag) => tag.name).join(', ')}</p>
+                                <p className="text-sm">Tags: {asset.tags.map(tag => tag.name).join(', ')}</p>
                             </div>
                             {imageExtension.includes(asset.extension) && (
                                 <div className="flex flex-row gap-2 mt-4">

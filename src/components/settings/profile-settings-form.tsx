@@ -12,21 +12,13 @@ import { Label } from '~/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card'
 import { useToast } from '~/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from '~/components/ui/form'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
 
 const profileSchema = z.object({
     displayName: z
         .string()
         .max(16, 'Display name must be 16 characters or less')
-        .transform((val) => val.trim()),
+        .transform(val => val.trim()),
 })
 
 type ProfileFormValues = z.infer<typeof profileSchema>
@@ -71,7 +63,7 @@ export function ProfileSettingsForm() {
                     title: 'Success',
                     description: 'Your display name has been updated',
                 })
-                
+
                 await authClient.getSession()
             } else {
                 throw new Error('Failed to update display name')
@@ -97,7 +89,7 @@ export function ProfileSettingsForm() {
     }
 
     if (!user) {
-        return null;
+        return null
     }
 
     return (
@@ -111,12 +103,7 @@ export function ProfileSettingsForm() {
                     <CardContent className="space-y-4">
                         <div className="space-y-2 mt-4">
                             <Label htmlFor="username">Username (from Discord)</Label>
-                            <Input
-                                id="username"
-                                value={user?.name || ''}
-                                disabled
-                                className="bg-muted"
-                            />
+                            <Input id="username" value={user?.name || ''} disabled className="bg-muted" />
                             <p className="text-sm text-muted-foreground">
                                 This is your username from Discord and cannot be changed
                             </p>

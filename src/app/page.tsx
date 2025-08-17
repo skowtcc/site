@@ -3,7 +3,8 @@ import { UnifiedAssetList } from '~/components/asset/unified-asset-list'
 
 export const metadata: Metadata = {
     title: 'skowt.cc',
-    description: "Comprehensive game asset database that's community-driven and free for everyone.",
+    description:
+        "Comprehensive game asset database that's community-driven and free for everyone. Previously known as wanderer.moe.",
 }
 
 export default function Page() {
@@ -13,10 +14,8 @@ export default function Page() {
                 <h1 className="text-3xl font-bold">Asset Library</h1>
                 <p className="text-muted-foreground mt-2">Browse and download assets across a wide variety of games.</p>
             </div>
-            
-            <UnifiedAssetList 
-                endpoint="/asset/search"
-            />
+
+            <UnifiedAssetList endpoint="/asset/search" />
         </div>
     )
 }

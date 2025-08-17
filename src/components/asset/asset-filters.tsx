@@ -105,7 +105,7 @@ export function AssetFilters() {
         games
             .filter(game => filters.selectedGames.includes(game.id))
             .forEach(game => {
-                game.categories.forEach((category) => {
+                game.categories.forEach(category => {
                     availableCategoryIds.add(category.id)
                 })
             })
@@ -125,7 +125,7 @@ export function AssetFilters() {
         // Get games that have at least one of the selected categories
         return games.map(game => ({
             ...game,
-            disabled: !game.categories.some((category) => filters.selectedCategories.includes(category.id)),
+            disabled: !game.categories.some(category => filters.selectedCategories.includes(category.id)),
         }))
     }
 

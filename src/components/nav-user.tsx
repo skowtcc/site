@@ -25,19 +25,19 @@ export function NavUser() {
         return (
             <div className="bg-background p-3">
                 <div className="flex flex-col gap-2">
-  <Button
-      variant="default"
-      size="sm"
-      className="w-full"
-      onClick={async () => {
-          await authClient.signIn.social({
-              provider: 'discord',
-              callbackURL: 'https://skowt.cc', 
-          })
-      }}
-  >
-      Login With Discord
-  </Button>
+                    <Button
+                        variant="default"
+                        size="sm"
+                        className="w-full"
+                        onClick={async () => {
+                            await authClient.signIn.social({
+                                provider: 'discord',
+                                callbackURL: 'https://skowt.cc',
+                            })
+                        }}
+                    >
+                        Login With Discord
+                    </Button>
                 </div>
             </div>
         )
@@ -46,9 +46,9 @@ export function NavUser() {
     const user = session.user
     const username = user.name || 'Unknown User'
     const displayName = user.displayName
-    
+
     const displayText = displayName ? `${displayName} (@${username})` : username
-    
+
     const fallbackLetter = (displayName || username).charAt(0).toUpperCase()
 
     const handleLogout = async () => {

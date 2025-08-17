@@ -47,7 +47,7 @@ export const client = createApiClient(
         }
 
         const headers: HeadersInit = {}
-        
+
         // Always set Content-Type for non-GET requests with body
         if (body && method !== 'get') {
             headers['Content-Type'] = 'application/json'

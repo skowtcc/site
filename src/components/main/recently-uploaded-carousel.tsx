@@ -43,7 +43,6 @@ export function RecentlyUploadedCarousel() {
         fetchRecentAssets()
     }, [])
 
-
     if (loading) {
         return (
             <div className="mb-6">
@@ -139,7 +138,8 @@ export function RecentlyUploadedCarousel() {
                                                 {asset.name}
                                             </h3>
                                             <p className="text-xs text-muted-foreground">
-                                                Uploaded {formatDistanceToNow(new Date(asset.createdAt), { addSuffix: true })}
+                                                Uploaded{' '}
+                                                {formatDistanceToNow(new Date(asset.createdAt), { addSuffix: true })}
                                             </p>
                                             <Badge variant="secondary" className="text-xs mt-1">
                                                 {asset.categoryName}

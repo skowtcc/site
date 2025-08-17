@@ -19,9 +19,9 @@ export function useToast() {
         } else {
             console.log(`[Toast] ${newToast.title}: ${newToast.description || ''}`)
         }
-        
+
         setToasts(prev => [...prev, newToast])
-        
+
         // Auto-remove after 5 seconds
         setTimeout(() => {
             setToasts(prev => prev.slice(1))

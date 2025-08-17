@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
         if (!response.success) {
             return {
                 title: `Asset Not Found - skowt.cc`,
-                description: `Asset ${id} not found on skowt.cc`,
+                description: `Asset ${id} not found`,
             }
         }
 
@@ -94,16 +94,6 @@ export default async function Page({ params }: Props) {
         }
         const sizeInGB = sizeInMB / 1024
         return `${sizeInGB.toFixed(1)}GB`
-    }
-
-    const formatNumber = (num: number) => {
-        if (num >= 1000000) {
-            return `${(num / 1000000).toFixed(1)}M`
-        }
-        if (num >= 1000) {
-            return `${(num / 1000).toFixed(1)}K`
-        }
-        return num.toString()
     }
 
     const formatDate = (dateString: string) => {

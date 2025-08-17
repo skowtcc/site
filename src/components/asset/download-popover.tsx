@@ -115,10 +115,9 @@ export function DownloadPopover({ children }: DownloadPopoverProps) {
                         </span>
                         {selectedAssets.length >= 450 && (
                             <span className="text-xs text-muted-foreground">
-                                {selectedAssets.length >= 500 
+                                {selectedAssets.length >= 500
                                     ? 'Maximum limit reached (500)'
-                                    : `Approaching limit (${selectedAssets.length}/500)`
-                                }
+                                    : `Approaching limit (${selectedAssets.length}/500)`}
                             </span>
                         )}
                     </div>

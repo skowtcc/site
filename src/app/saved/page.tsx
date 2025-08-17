@@ -38,10 +38,7 @@ export default function SavedAssetsPage() {
                     <p className="text-muted-foreground mt-2">View and manage your saved assets.</p>
                 </div>
 
-                <UnifiedAssetList 
-                    endpoint="/user/saved-assets"
-                    requireAuth={true}
-                />
+                <UnifiedAssetList endpoint="/user/saved-assets" requireAuth={true} />
             </div>
         </div>
     )

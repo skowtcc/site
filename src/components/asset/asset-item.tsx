@@ -144,7 +144,11 @@ function DynamicTagDisplay({ tags, gameSlug, gameName }: { tags: string[]; gameS
         <div ref={containerRef} className="flex flex-wrap gap-1 h-6 overflow-hidden">
             <Badge variant="secondary" className="text-xs">
                 <Image
-                    src={'https://pack.skowt.cc/cdn-cgi/image/width=64,height=64,quality=75/game/' + gameSlug + '-icon.png'}
+                    src={
+                        'https://pack.skowt.cc/cdn-cgi/image/width=64,height=64,quality=75/game/' +
+                        gameSlug +
+                        '-icon.png'
+                    }
                     alt={gameName}
                     width={16}
                     height={16}
@@ -231,7 +235,12 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
                 <Link href={`/asset/${asset.id}`} className="flex items-center gap-4 w-full" onClick={handleItemClick}>
                     <div className="absolute inset-0">
                         <img
-                            src={'https://pack.skowt.cc/cdn-cgi/image/width=100,quality=10/asset/' + asset.id + '.' + asset.extension}
+                            src={
+                                'https://pack.skowt.cc/cdn-cgi/image/width=100,quality=10/asset/' +
+                                asset.id +
+                                '.' +
+                                asset.extension
+                            }
                             alt=""
                             className="w-full h-full object-cover opacity-5 blur-sm"
                         />
@@ -240,7 +249,12 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
                     <div className="relative flex items-center gap-4 w-full">
                         <div className="flex-shrink-0 w-20 h-20 rounded bg-muted flex items-center justify-center p-2">
                             <img
-                                src={'https://pack.skowt.cc/cdn-cgi/image/width=100,quality=10/asset/' + asset.id + '.' + asset.extension}
+                                src={
+                                    'https://pack.skowt.cc/cdn-cgi/image/width=100,quality=10/asset/' +
+                                    asset.id +
+                                    '.' +
+                                    asset.extension
+                                }
                                 alt={asset.name}
                                 className={`max-w-full max-h-full object-contain ${asset.isSuggestive && !showSuggestive ? 'blur-lg' : ''}`}
                             />
@@ -272,7 +286,9 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
                                         </div> */}
                                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                             <CalendarIcon className="h-3 w-3" />
-                                            <span>{formatDistanceToNow(new Date(asset.createdAt), { addSuffix: true })}</span>
+                                            <span>
+                                                {formatDistanceToNow(new Date(asset.createdAt), { addSuffix: true })}
+                                            </span>
                                         </div>
                                         <span className="text-xs text-muted-foreground">
                                             {formatFileSize(asset.size)}
@@ -321,7 +337,12 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
             <Link href={`/asset/${asset.id}`} onClick={handleItemClick}>
                 <div className="absolute inset-0">
                     <img
-                        src={'https://pack.skowt.cc/cdn-cgi/image/width=100,quality=10/asset/' + asset.id + '.' + asset.extension}
+                        src={
+                            'https://pack.skowt.cc/cdn-cgi/image/width=100,quality=10/asset/' +
+                            asset.id +
+                            '.' +
+                            asset.extension
+                        }
                         alt=""
                         className="w-full h-full object-cover opacity-5 blur-sm"
                     />
@@ -329,9 +350,17 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
 
                 <div className="relative">
                     <div className="p-2">
-                        <div className="bg-muted relative rounded-md overflow-hidden flex items-center justify-center p-4" style={{ minHeight: '200px' }}>
+                        <div
+                            className="bg-muted relative rounded-md overflow-hidden flex items-center justify-center p-4"
+                            style={{ minHeight: '200px' }}
+                        >
                             <img
-                                src={'https://pack.skowt.cc/cdn-cgi/image/width=300,quality=70/asset/' + asset.id + '.' + asset.extension}
+                                src={
+                                    'https://pack.skowt.cc/cdn-cgi/image/width=300,quality=70/asset/' +
+                                    asset.id +
+                                    '.' +
+                                    asset.extension
+                                }
                                 alt={asset.name}
                                 className={`max-w-full max-h-full object-contain ${asset.isSuggestive && !showSuggestive ? 'blur-lg' : ''}`}
                                 style={{ maxHeight: '250px' }}

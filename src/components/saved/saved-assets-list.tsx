@@ -86,12 +86,12 @@ export function SavedAssetsList() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
     const [page, setPage] = useState(1)
     const [pagination, setPagination] = useState<any>(null)
-    
+
     // Filter options from saved assets
     const [availableGames, setAvailableGames] = useState<any[]>([])
     const [availableCategories, setAvailableCategories] = useState<any[]>([])
     const [availableTags, setAvailableTags] = useState<any[]>([])
-    
+
     const [filters, setFilters] = useState<SavedAssetsFilters>({
         searchQuery: '',
         selectedGames: [],
@@ -102,7 +102,7 @@ export function SavedAssetsList() {
     })
 
     const debouncedSearch = useDebounce(filters.searchQuery, 300)
-    
+
     const { data: session } = authClient.useSession()
     const user = session?.user
 
@@ -113,15 +113,15 @@ export function SavedAssetsList() {
 
     const fetchSavedAssets = useCallback(async () => {
         if (!user) return
-        
+
         setLoading(true)
         try {
             const params = new URLSearchParams()
             params.append('page', page.toString())
             params.append('limit', '20')
-            
+
             if (debouncedSearch) params.append('search', debouncedSearch)
-            
+
             // Convert IDs to slugs for API
             if (filters.selectedGames.length > 0) {
                 const gameSlugs = filters.selectedGames
@@ -131,7 +131,7 @@ export function SavedAssetsList() {
                     params.append('games', gameSlugs.join(','))
                 }
             }
-            
+
             if (filters.selectedCategories.length > 0) {
                 const categorySlugs = filters.selectedCategories
                     .map(categoryId => availableCategories.find(category => category.id === categoryId)?.slug)
@@ -140,7 +140,7 @@ export function SavedAssetsList() {
                     params.append('categories', categorySlugs.join(','))
                 }
             }
-            
+
             if (filters.selectedTags.length > 0) {
                 const tagSlugs = filters.selectedTags
                     .map(tagId => availableTags.find(tag => tag.id === tagId)?.slug)
@@ -153,47 +153,52 @@ export function SavedAssetsList() {
             params.append('sortOrder', filters.sortOrder)
 
             const response = await client.get(`/user/saved-assets`, {
-                query: Object.fromEntries(params)
+                query: Object.fromEntries(params),
             })
-            
+
             setSavedAssets(response.savedAssets || [])
             setPagination(response.pagination)
-            
+
             // Extract unique games, categories, and tags from all saved assets
             // This would ideally come from a separate endpoint, but we'll work with what we have
             const games = new Map()
             const categories = new Map()
             const tags = new Map()
-            
+
             if (response.savedAssets && response.savedAssets.length > 0) {
                 response.savedAssets.forEach((asset: any) => {
-                if (!games.has(asset.gameId)) {
-                    games.set(asset.gameId, {
-                        id: asset.gameId,
-                        name: asset.gameName,
-                        slug: asset.gameSlug
-                    })
-                }
-                if (!categories.has(asset.categoryId)) {
-                    categories.set(asset.categoryId, {
-                        id: asset.categoryId,
-                        name: asset.categoryName,
-                        slug: asset.categorySlug
-                    })
-                }
+                    if (!games.has(asset.gameId)) {
+                        games.set(asset.gameId, {
+                            id: asset.gameId,
+                            name: asset.gameName,
+                            slug: asset.gameSlug,
+                        })
+                    }
+                    if (!categories.has(asset.categoryId)) {
+                        categories.set(asset.categoryId, {
+                            id: asset.categoryId,
+                            name: asset.categoryName,
+                            slug: asset.categorySlug,
+                        })
+                    }
                     asset.tags.forEach((tag: any) => {
                         if (!tags.has(tag.id)) {
                             tags.set(tag.id, {
                                 id: tag.id,
                                 name: tag.name,
-                                slug: tag.slug
+                                slug: tag.slug,
                             })
                         }
                     })
                 })
-                
+
                 // Only update if we're on the first page (to get all options)
-                if (page === 1 && filters.selectedGames.length === 0 && filters.selectedCategories.length === 0 && filters.selectedTags.length === 0) {
+                if (
+                    page === 1 &&
+                    filters.selectedGames.length === 0 &&
+                    filters.selectedCategories.length === 0 &&
+                    filters.selectedTags.length === 0
+                ) {
                     setAvailableGames(Array.from(games.values()))
                     setAvailableCategories(Array.from(categories.values()))
                     setAvailableTags(Array.from(tags.values()))
@@ -204,21 +209,23 @@ export function SavedAssetsList() {
         } finally {
             setLoading(false)
         }
-    }, [user, page, debouncedSearch, filters.selectedGames, filters.selectedCategories, filters.selectedTags, filters.sortBy, filters.sortOrder])
+    }, [
+        user,
+        page,
+        debouncedSearch,
+        filters.selectedGames,
+        filters.selectedCategories,
+        filters.selectedTags,
+        filters.sortBy,
+        filters.sortOrder,
+    ])
 
     useEffect(() => {
         fetchSavedAssets()
     }, [fetchSavedAssets])
 
     if (!user) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-center">
-                    <h3 className="text-lg font-semibold mb-2">Sign in Required</h3>
-                    <p className="text-muted-foreground">You must be logged in to view your saved assets.</p>
-                </div>
-            </div>
-        )
+        return null
     }
 
     return (
@@ -302,7 +309,9 @@ export function SavedAssetsList() {
                 <div className="flex items-center justify-between mb-4">
                     <div className="text-sm text-muted-foreground">
                         {pagination && (
-                            <span>Showing {savedAssets.length} of {pagination.total} saved assets</span>
+                            <span>
+                                Showing {savedAssets.length} of {pagination.total} saved assets
+                            </span>
                         )}
                     </div>
                     <div className="flex items-center gap-2">
@@ -338,9 +347,19 @@ export function SavedAssetsList() {
                     </div>
                 ) : (
                     <>
-                        <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4' : 'flex flex-col gap-4'}>
+                        <div
+                            className={
+                                viewMode === 'grid'
+                                    ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'
+                                    : 'flex flex-col gap-4'
+                            }
+                        >
                             {savedAssets.map(asset => (
-                                <AssetItem key={asset.id} asset={asset} variant={viewMode === 'grid' ? 'card' : 'list'} />
+                                <AssetItem
+                                    key={asset.id}
+                                    asset={asset}
+                                    variant={viewMode === 'grid' ? 'card' : 'list'}
+                                />
                             ))}
                         </div>
 

@@ -3,8 +3,8 @@ import { inferAdditionalFields } from 'better-auth/client/plugins'
 
 export const authClient = createAuthClient({
     baseURL: 'https://den.skowt.cc',
-    disabledPaths: ["/update-user"],
-    basePath: "/auth",
+    disabledPaths: ['/update-user'],
+    basePath: '/auth',
     plugins: [
         inferAdditionalFields({
             user: {
