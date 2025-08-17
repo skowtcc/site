@@ -140,7 +140,7 @@ export default async function Page({ params }: Props) {
                 </BreadcrumbList>
             </Breadcrumb>
             <div className="flex lg:flex-row flex-col gap-6">
-                {/* Image Preview Section */}
+                {}
                 <div className="lg:w-1/2">
                     <div className="bg-card border border-border rounded-lg p-4 xl:h-full">
                         <div
@@ -150,7 +150,7 @@ export default async function Page({ params }: Props) {
                                 backgroundSize: `400px 400px`,
                             }}
                         >
-                            {/* Asset image with suggestive content handling */}
+                            {}
                             <AssetImage
                                 assetId={asset.id}
                                 extension={asset.extension}
@@ -162,7 +162,7 @@ export default async function Page({ params }: Props) {
                     </div>
                 </div>
 
-                {/* Asset Details Section */}
+                {}
                 <div className="flex flex-col gap-4 lg:w-1/2 w-full xl:h-full">
                     {/* Action Buttons - Show first on mobile/tablet */}
                     <AssetActions asset={asset} className="xl:hidden" />
@@ -171,7 +171,7 @@ export default async function Page({ params }: Props) {
                         <h3 className="text-lg font-semibold mb-4">Asset Details</h3>
 
                         <div className="space-y-4">
-                            {/* Asset Info Table */}
+                            {}
                             <Table>
                                 <TableHeader>
                                     <TableRow>
@@ -289,7 +289,7 @@ export default async function Page({ params }: Props) {
                                     </div>
                                     <div className="flex flex-col space-y-1">
                                         <p>@{asset.uploadedBy.username}</p>
-                                        {/* yes i am hardcoding myself. no i do not care */}
+                                        {}
                                         <Badge
                                             variant="secondary"
                                             className="text-xs bg-primary text-primary-foreground"

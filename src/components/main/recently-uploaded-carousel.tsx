@@ -114,7 +114,7 @@ export function RecentlyUploadedCarousel() {
                         {assets.map(asset => (
                             <CarouselItem key={asset.id} className="pl-1 md:pl-2 basis-full sm:basis-1/2 xl:basis-1/3">
                                 <div className="relative flex items-center gap-3 p-3 border rounded-lg bg-card hover:shadow-md transition-shadow cursor-pointer min-w-0 overflow-hidden">
-                                    {/* Blurred background image */}
+                                    {}
                                     <div className="absolute inset-0 overflow-hidden">
                                         <img
                                             src={`https://pack.skowt.cc/cdn-cgi/image/width=10,height=10,quality=10/asset/${asset.id}.${asset.extension}`}
@@ -123,7 +123,7 @@ export function RecentlyUploadedCarousel() {
                                         />
                                     </div>
 
-                                    {/* Content overlay */}
+                                    {}
                                     <div className="relative flex items-center gap-3 w-full">
                                         <div className="flex-shrink-0">
                                             <img
@@ -147,7 +147,7 @@ export function RecentlyUploadedCarousel() {
                                         </div>
                                     </div>
 
-                                    {/* Suggestive content overlay */}
+                                    {}
                                     {asset.isSuggestive && (
                                         <div className="absolute inset-0 bg-background/80 backdrop-blur-lg flex items-center justify-center">
                                             <div className="text-center px-2">
@@ -162,7 +162,7 @@ export function RecentlyUploadedCarousel() {
                         ))}
                     </CarouselContent>
 
-                    {/* Custom positioned navigation buttons */}
+                    {}
                     <div className="absolute -top-12 right-0 flex items-center gap-2">
                         <CarouselPrevious className="static translate-y-0 size-9 w-10 rounded-lg" />
                         <CarouselNext className="static translate-y-0 size-9 w-10 rounded-lg" />

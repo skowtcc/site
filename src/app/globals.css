@@ -226,24 +226,22 @@ body {
     }
 }
 
-/* Masonry CSS - Added at the end to avoid conflicts */
 .my-masonry-grid {
     display: flex;
-    margin-left: -16px; /* gutter size offset */
+    margin-left: -16px;
     width: auto;
 }
 
 .my-masonry-grid_column {
-    padding-left: 16px; /* gutter size */
+    padding-left: 16px;
     background-clip: padding-box;
 }
 
-/* Optional: different gutter size on mobile */
 @media (max-width: 800px) {
     .my-masonry-grid {
-        margin-left: -8px; /* gutter size offset */
+        margin-left: -8px;
     }
     .my-masonry-grid_column {
-        padding-left: 8px; /* gutter size */
+        padding-left: 8px;
     }
 }

@@ -51,7 +51,7 @@ export function SiteHeader() {
                     <div className="flex-1" />
 
                     <div className="flex items-center gap-2">
-                        {/* Mode Toggle */}
+                        {}
                         <Button
                             variant={'outline'}
                             size="sm"
@@ -75,7 +75,7 @@ export function SiteHeader() {
                             <>
                                 <Separator orientation="vertical" className="h-6" />
 
-                                {/* Download Popover */}
+                                {}
                                 <DownloadPopover>
                                     <Button variant="outline" size="sm" className="flex items-center gap-2">
                                         <Download className="h-4 w-4" />

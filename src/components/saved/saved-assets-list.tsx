@@ -223,7 +223,7 @@ export function SavedAssetsList() {
 
     return (
         <div className="flex flex-col 2xl:flex-row gap-6">
-            {/* Filters Sidebar */}
+            {}
             <div className="2xl:w-80 w-full bg-card rounded-lg border p-4 pt-2 space-y-6 h-fit">
                 <div className="space-y-4">
                     <div className="relative py-2">
@@ -297,7 +297,7 @@ export function SavedAssetsList() {
                 </div>
             </div>
 
-            {/* Assets List */}
+            {}
             <div className="flex-1">
                 <div className="flex items-center justify-between mb-4">
                     <div className="text-sm text-muted-foreground">
@@ -344,7 +344,7 @@ export function SavedAssetsList() {
                             ))}
                         </div>
 
-                        {/* Pagination */}
+                        {}
                         {pagination && pagination.totalPages > 1 && (
                             <div className="flex items-center justify-center gap-2 mt-6">
                                 <Button

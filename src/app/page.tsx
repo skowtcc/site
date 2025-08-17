@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
     return (
-        <div className="flex flex-col p-6">
+        <div className="flex flex-col p-6 min-h-screen">
             <div className="mb-6">
                 <h1 className="text-3xl font-bold">Asset Library</h1>
                 <p className="text-muted-foreground mt-2">Browse and download assets across a wide variety of games.</p>

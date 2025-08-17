@@ -148,7 +148,7 @@ export default function PfpUploaderCropper() {
 
             setFinalImageUrl(newFinalUrl)
 
-            const response = await fetch('http://localhost:8787/auth/profile', {
+            const response = await fetch('https://den.skowt.cc/auth/profile', {
                 method: 'PUT',
                 body: formData,
                 credentials: 'include',
@@ -203,7 +203,7 @@ export default function PfpUploaderCropper() {
     return (
         <div className="flex flex-col items-center gap-2">
             <div className="relative inline-flex">
-                {/* Drop area - uses finalImageUrl */}
+                {}
                 <button
                     className="border-input hover:bg-accent/50 data-[dragging=true]:bg-accent/50 focus-visible:border-ring focus-visible:ring-ring/50 relative flex size-24 items-center justify-center overflow-hidden rounded-full border border-dashed transition-colors outline-none focus-visible:ring-[3px] has-disabled:pointer-events-none has-disabled:opacity-50 has-[img]:border-none"
                     onClick={openFileDialog}
@@ -229,7 +229,7 @@ export default function PfpUploaderCropper() {
                         </div>
                     )}
                 </button>
-                {/* Remove button - depends on finalImageUrl */}
+                {}
                 {finalImageUrl && (
                     <Button
                         onClick={handleRemoveFinalImage}
@@ -243,7 +243,7 @@ export default function PfpUploaderCropper() {
                 <input {...getInputProps()} className="sr-only" aria-label="Upload image file" tabIndex={-1} />
             </div>
 
-            {/* Cropper Dialog - Use isDialogOpen for open prop */}
+            {}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="gap-0 p-0 sm:max-w-140 *:[button]:hidden">
                     <DialogDescription className="sr-only">Crop image dialog</DialogDescription>

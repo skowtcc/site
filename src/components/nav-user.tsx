@@ -32,7 +32,7 @@ export function NavUser() {
       onClick={async () => {
           await authClient.signIn.social({
               provider: 'discord',
-              callbackURL: 'http://localhost:3000', 
+              callbackURL: 'https://skowt.cc', 
           })
       }}
   >

@@ -48,22 +48,38 @@ function AssetApprovalQueue() {
     }, [])
 
     const approveAsset = async (assetId: string) => {
-        const response = await client.post('/asset/{id}/approve', {
-            path: { id: assetId },
-        })
+        try {
+            const response = await client.post('/asset/{id}/approve', {
+                path: { id: assetId },
+            })
 
-        if (!response) {
-            toast.error('error')
+            if (response && response.success) {
+                // Remove asset from list on successful approval
+                setAssetApprovalList(prev => prev.filter(asset => asset.id !== assetId))
+                toast.success('Asset approved successfully')
+            } else {
+                toast.error('Failed to approve asset')
+            }
+        } catch (error) {
+            toast.error('Error approving asset')
         }
     }
 
     const denyAsset = async (assetId: string) => {
-        const response = await client.post('/asset/{id}/deny', {
-            path: { id: assetId },
-        })
+        try {
+            const response = await client.post('/asset/{id}/deny', {
+                path: { id: assetId },
+            })
 
-        if (!response) {
-            toast.error('error')
+            if (response && response.success) {
+                // Remove asset from list on successful denial
+                setAssetApprovalList(prev => prev.filter(asset => asset.id !== assetId))
+                toast.success('Asset denied successfully')
+            } else {
+                toast.error('Failed to deny asset')
+            }
+        } catch (error) {
+            toast.error('Error denying asset')
         }
     }
 

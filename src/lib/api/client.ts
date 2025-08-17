@@ -1,6 +1,6 @@
 import { createApiClient, Method, EndpointParameters } from './schema/api.zod'
 
-const devUrl = 'http://localhost:8787'
+const devUrl = 'https://den.skowt.cc'
 
 export const client = createApiClient(
     async (method: Method, url: string, parameters: EndpointParameters | undefined) => {

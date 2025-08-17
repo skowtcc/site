@@ -151,7 +151,7 @@ export function AssetUploadForm() {
                 formData.append('file', data.file[0])
             }
 
-            const response = await fetch('http://localhost:8787/asset/upload', {
+            const response = await fetch('https://den.skowt.cc/asset/upload', {
                 method: 'POST',
                 body: formData,
                 credentials: 'include',
@@ -180,9 +180,15 @@ export function AssetUploadForm() {
         }
     }
 
-    // Check if user has permission to view upload form
+    // Redirect unauthorized users
+    useEffect(() => {
+        if (!user || (user.role !== 'contributor' && user.role !== 'admin')) {
+            router.push('/')
+        }
+    }, [user, router])
+
+    // Don't render form for unauthorized users
     if (!user || (user.role !== 'contributor' && user.role !== 'admin')) {
-        router.push('/')
         return null
     }
 

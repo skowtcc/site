@@ -106,7 +106,7 @@ export function DownloadPopover({ children }: DownloadPopoverProps) {
         <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>{children}</PopoverTrigger>
             <PopoverContent className="w-96 p-0 bg-card border" align="end">
-                {/* Header */}
+                {}
                 <div className="flex items-center justify-between p-4 border-b">
                     <div className="flex flex-col gap-1">
                         <span className="font-medium text-sm">
@@ -132,7 +132,7 @@ export function DownloadPopover({ children }: DownloadPopoverProps) {
             <Trash2 className="h-3 w-3" />
           </Button> */}
 
-                    {/* close button */}
+                    {}
                     <Button
                         variant="outline"
                         size="sm"
@@ -144,7 +144,7 @@ export function DownloadPopover({ children }: DownloadPopoverProps) {
                     </Button>
                 </div>
 
-                {/* Progress Section */}
+                {}
                 {isMassDownloading && progress && (
                     <div className="p-4 border-b bg-muted/50">
                         <div className="space-y-2">
@@ -154,7 +154,7 @@ export function DownloadPopover({ children }: DownloadPopoverProps) {
                     </div>
                 )}
 
-                {/* Assets List */}
+                {}
                 <ScrollArea className="max-h-48">
                     {selectedAssets.length === 0 ? (
                         <div className="p-4 text-center text-muted-foreground">

@@ -27,7 +27,7 @@ export function AssetDetails() {
 
     return (
         <div className="flex flex-col lg:flex-row gap-6 p-6">
-            {/* Image Preview Section */}
+            {}
             <div className="lg:w-1/2">
                 <div className="border rounded-lg p-4 bg-card">
                     <div className="relative aspect-square border rounded-lg overflow-hidden bg-muted">
@@ -46,14 +46,14 @@ export function AssetDetails() {
                 </div>
             </div>
 
-            {/* Asset Details Section */}
+            {}
             <div className="lg:w-1/2">
                 <div className="border rounded-lg p-4 bg-card">
                     <h3 className="text-lg font-semibold mb-4">Asset Details</h3>
 
                     {assets.length > 0 ? (
                         <div className="space-y-4">
-                            {/* Basic Info Table */}
+                            {}
                             <Table>
                                 <TableHeader>
                                     <TableRow>
@@ -99,7 +99,7 @@ export function AssetDetails() {
                                 </TableBody>
                             </Table>
 
-                            {/* Tags Section */}
+                            {}
                             <div>
                                 <h4 className="font-medium mb-2 flex items-center gap-2">
                                     <Tag className="h-4 w-4" />
@@ -114,7 +114,7 @@ export function AssetDetails() {
                                 </div>
                             </div>
 
-                            {/* Actions */}
+                            {}
                             <div className="flex gap-2 pt-4 border-t">
                                 <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
                                     Download
