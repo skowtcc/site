@@ -22,9 +22,12 @@ export function SiteHeader() {
 
     return (
         <>
-            <div className="bg-teal-400/10 border-b border-teal-400/20 text-teal-400 p-3 text-xs text-center">
-                wanderer.moe is now skowt.cc with a completely new site! Join the discord for more info.
-            </div>
+            <Link href="https://discord.gg/noid" target="_blank" rel="noreferrer">
+                <div className="bg-teal-400/10 border-b border-teal-400/20 text-teal-400 p-3 text-xs text-center hover:bg-teal-400/20 transition-colors cursor-pointer duration-150">
+                    👋 wanderer.moe is now skowt.cc with a completely new site! Join the discord (by clicking here) for
+                    more info.
+                </div>
+            </Link>
             <header className="bg-card sticky top-0 z-50 flex w-full items-center border-b">
                 <div className="flex h-(--header-height) w-full items-center gap-2 px-6">
                     <Link href="/" className="">

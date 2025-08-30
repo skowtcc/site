@@ -11,6 +11,7 @@ import { isAssetSelected } from '~/lib/redux/utils'
 import { formatDistanceToNow } from 'date-fns'
 import { toast } from 'sonner'
 import { HiOutlineCalendar, HiOutlineDocument } from 'react-icons/hi'
+import { cn } from '~/lib/utils'
 
 const LOCAL_STORAGE_KEY = 'showSuggestiveContent'
 
@@ -42,7 +43,17 @@ type Asset = {
     }
 }
 
-function DynamicTagDisplay({ tags, gameSlug, gameName }: { tags: string[]; gameSlug: string; gameName: string }) {
+function DynamicTagDisplay({
+    tags,
+    gameSlug,
+    gameName,
+    tagObjects,
+}: {
+    tags: string[]
+    gameSlug: string
+    gameName: string
+    tagObjects?: Array<{ id: string; name: string; color: string | null }>
+}) {
     const containerRef = useRef<HTMLDivElement>(null)
     const [visibleTags, setVisibleTags] = useState<string[]>([])
     const [hiddenCount, setHiddenCount] = useState(0)
@@ -150,16 +161,35 @@ function DynamicTagDisplay({ tags, gameSlug, gameName }: { tags: string[]; gameS
                         gameSlug +
                         '-icon.png'
                     }
+                    className="rounded-sm"
                     alt={gameName}
                     width={16}
                     height={16}
                 />
             </Badge>
-            {visibleTags.map((tag, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
-                    {tag}
-                </Badge>
-            ))}
+            {visibleTags.map((tag, index) => {
+                // Find the matching tag object for color styling (skip first tag which is category)
+                const tagObj = index > 0 && tagObjects ? tagObjects.find(t => t.name === tag) : null
+                return (
+                    <Badge
+                        key={index}
+                        variant="secondary"
+                        className="text-xs"
+                        style={
+                            tagObj?.color
+                                ? {
+                                      backgroundColor: `${tagObj.color}20`,
+                                      borderColor: tagObj.color,
+                                      borderWidth: '1px',
+                                      color: tagObj.color,
+                                  }
+                                : {}
+                        }
+                    >
+                        {tag}
+                    </Badge>
+                )
+            })}
             {hiddenCount > 0 && (
                 <Badge variant="outline" className="text-xs text-muted-foreground">
                     +{hiddenCount} more
@@ -172,9 +202,10 @@ function DynamicTagDisplay({ tags, gameSlug, gameName }: { tags: string[]; gameS
 interface AssetItemProps {
     asset: Asset
     variant?: 'card' | 'list'
+    className?: string
 }
 
-export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
+export function AssetItem({ asset, variant = 'card', className }: AssetItemProps) {
     const [showSuggestive, setShowSuggestive] = useState(false)
     const allTags = [asset.categoryName, ...asset.tags.map(tag => tag.name)]
 
@@ -221,7 +252,10 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
     if (variant === 'list') {
         return (
             <div
-                className={`relative flex items-center gap-4 p-4 border rounded-lg bg-card border-2 hover:border-primary transition-all duration-150 cursor-pointer break-inside-avoid ${isSelected ? 'border-1 border-primary' : ''}`}
+                className={cn(
+                    `relative flex items-center gap-4 p-4 border rounded-lg bg-card border-2 hover:border-primary transition-all duration-150 cursor-pointer break-inside-avoid ${isSelected ? 'border-1 border-primary' : ''}`,
+                    className,
+                )}
             >
                 <Link href={`/asset/${asset.id}`} className="flex items-center gap-4 w-full" onClick={handleItemClick}>
                     <div className="absolute inset-0">
@@ -241,7 +275,7 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
                         <div className="flex-shrink-0 w-20 h-20 rounded bg-muted flex items-center justify-center p-2">
                             <img
                                 src={
-                                    'https://pack.skowt.cc/cdn-cgi/image/width=100,quality=10/asset/' +
+                                    'https://pack.skowt.cc/cdn-cgi/image/width=300,quality=70/asset/' +
                                     asset.id +
                                     '.' +
                                     asset.extension
@@ -259,29 +293,33 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
                                     >
                                         {asset.name}
                                     </h3>
-                                    <p
-                                        className={`text-sm text-muted-foreground mt-1 ${asset.isSuggestive && !showSuggestive ? 'blur-sm' : ''}`}
+                                    <div
+                                        className={`flex items-center gap-2 mt-1 ${asset.isSuggestive && !showSuggestive ? 'blur-sm' : ''}`}
                                     >
-                                        {asset.gameName} • {asset.categoryName}
-                                    </p>
+                                        <Badge variant="secondary" className="text-xs">
+                                            <Image
+                                                src={`https://pack.skowt.cc/cdn-cgi/image/width=64,height=64,quality=75/game/${asset.gameSlug}-icon.png`}
+                                                alt={asset.gameName}
+                                                width={16}
+                                                height={16}
+                                                className="rounded-sm"
+                                            />
+                                        </Badge>
+                                        <Badge variant="secondary" className="text-xs">
+                                            {asset.categoryName}
+                                        </Badge>
+                                    </div>
                                     <div
                                         className={`flex items-center gap-2 mt-2 ${asset.isSuggestive && !showSuggestive ? 'blur-sm' : ''}`}
                                     >
-                                        {/* <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                            <DownloadIcon size={14} />
-                                            <span>{formatNumber(asset.downloadCount)}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                            <EyeIcon size={14} />
-                                            <span>{formatNumber(asset.viewCount)}</span>
-                                        </div> */}
                                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                             <HiOutlineCalendar className="h-3 w-3" />
                                             <span>
                                                 {formatDistanceToNow(new Date(asset.createdAt), { addSuffix: true })}
                                             </span>
                                         </div>
-                                        <span className="text-xs text-muted-foreground">
+                                        <span className="text-xs text-muted-foreground flex flex-row gap-1 items-center">
+                                            <HiOutlineDocument className="h-3 w-3" />
                                             {formatFileSize(asset.size)}
                                         </span>
                                     </div>
@@ -292,7 +330,21 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
                                 >
                                     <div className="flex flex-wrap gap-1 justify-end">
                                         {asset.tags.slice(0, 3).map(tag => (
-                                            <Badge key={tag.id} variant="secondary" className="text-xs">
+                                            <Badge
+                                                key={tag.id}
+                                                variant="secondary"
+                                                className="text-xs"
+                                                style={
+                                                    tag.color
+                                                        ? {
+                                                              backgroundColor: `${tag.color}20`,
+                                                              borderColor: tag.color,
+                                                              borderWidth: '1px',
+                                                              color: tag.color,
+                                                          }
+                                                        : {}
+                                                }
+                                            >
                                                 {tag.name}
                                             </Badge>
                                         ))}
@@ -323,7 +375,10 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
 
     return (
         <div
-            className={`relative bg-card rounded-lg border overflow-hidden border-2 hover:border-primary transition-all duration-150 mb-4 break-inside-avoid ${isSelected ? 'border-1 border-primary' : ' '}`}
+            className={cn(
+                `relative bg-card rounded-lg border overflow-hidden border-2 hover:border-primary transition-all duration-150 mb-4 break-inside-avoid ${isSelected ? 'border-1 border-primary' : ' '}`,
+                className,
+            )}
         >
             <Link href={`/asset/${asset.id}`} onClick={handleItemClick}>
                 <div className="absolute inset-0">
@@ -365,7 +420,12 @@ export function AssetItem({ asset, variant = 'card' }: AssetItemProps) {
                             {asset.name}
                         </h3>
                         <div className={`px-4 ${asset.isSuggestive && !showSuggestive ? 'blur-sm' : ''}`}>
-                            <DynamicTagDisplay tags={allTags} gameSlug={asset.gameSlug} gameName={asset.gameName} />
+                            <DynamicTagDisplay
+                                tags={allTags}
+                                gameSlug={asset.gameSlug}
+                                gameName={asset.gameName}
+                                tagObjects={asset.tags}
+                            />
                         </div>
                         <div
                             className={`flex px-4 p-4 items-center mt-4 border-t justify-between text-xs text-muted-foreground ${asset.isSuggestive && !showSuggestive ? 'blur-sm' : ''}`}

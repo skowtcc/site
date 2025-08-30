@@ -19,8 +19,9 @@ import { client } from '~/lib/api/client'
 import { notFound } from 'next/navigation'
 import { AssetImage } from '~/components/asset/asset-image'
 import { AssetActions } from '~/components/asset/asset-actions'
+import { SimilarAssets } from '~/components/asset/asset-similar-assets'
+import { BackButton } from '~/components/ui/back-button'
 import Link from 'next/link'
-import { HiArrowLeft, HiArrowRight } from 'react-icons/hi'
 
 export const runtime = 'edge'
 
@@ -47,7 +48,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
         return {
             title: `${response.asset.name} - ${response.asset.game.name} - skowt.cc`,
-            description: `Download ${response.asset.name} for ${response.asset.game.name} on skowt.cc. ${response.asset.downloadCount} downloads, ${response.asset.viewCount} views.`,
+            description: `Download and view ${response.asset.name} for ${response.asset.game.name} on skowt.cc.`,
         }
     } catch (error) {
         return {
@@ -100,14 +101,9 @@ export default async function Page({ params }: Props) {
 
     return (
         <div className="flex flex-col gap-2 p-6 min-h-screen">
-            <Link
-                href={`/?games=${asset.game.slug}&categories=${asset.category.slug}`}
-                className="flex items-center gap-2 mb-4"
-            >
-                <Button size="sm" variant={'outline'} className="w-min text-xs flex flex-row items-center gap-1">
-                    View {asset.game.name} {asset.category.name}
-                </Button>
-            </Link>
+            <div className="flex items-center gap-2 mb-4">
+                <BackButton className="w-min text-xs" />
+            </div>
             <div className="flex lg:flex-row flex-col gap-6">
                 <div className="lg:w-1/2">
                     <div className="bg-card border border-border rounded-lg p-4 xl:h-full">
@@ -191,10 +187,15 @@ export default async function Page({ params }: Props) {
                                                     <Badge
                                                         key={tag.id}
                                                         variant="secondary"
-                                                        className="text-xs bg-muted"
+                                                        className="text-xs"
                                                         style={
                                                             tag.color
-                                                                ? { backgroundColor: tag.color, color: 'white' }
+                                                                ? {
+                                                                      backgroundColor: `${tag.color}20`,
+                                                                      borderColor: tag.color,
+                                                                      borderWidth: '1px',
+                                                                      color: tag.color,
+                                                                  }
                                                                 : {}
                                                         }
                                                     >
@@ -278,6 +279,14 @@ export default async function Page({ params }: Props) {
                     </div>
                 </div>
             </div>
+
+            <SimilarAssets
+                currentAssetId={asset.id}
+                gameSlug={asset.game.slug}
+                categorySlug={asset.category.slug}
+                gameName={asset.game.name}
+                categoryName={asset.category.name}
+            />
         </div>
     )
 }

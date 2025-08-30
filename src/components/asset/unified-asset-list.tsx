@@ -14,6 +14,8 @@ import Image from 'next/image'
 import { client } from '~/lib/api/client'
 import { authClient } from '~/lib/auth/auth-client'
 import { useSearchParams } from 'next/navigation'
+// @ts-expect-error no types available afaik?
+import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
 
 // Types
 interface Asset {
@@ -82,6 +84,12 @@ function MultiSelectFilter({
     selected: string[]
     onSelectionChange: (selected: string[]) => void
 }) {
+    const [searchQuery, setSearchQuery] = useState('')
+
+    const filteredOptions = useMemo(() => {
+        if (!searchQuery.trim()) return options
+        return options.filter(option => option.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    }, [options, searchQuery])
     const handleToggle = (optionId: string, disabled?: boolean) => {
         if (disabled) return // Don't allow toggling disabled options
         const newSelected = selected.includes(optionId)
@@ -97,9 +105,20 @@ function MultiSelectFilter({
                     {title} {selected.length > 0 && `(${selected.length})`}
                 </AccordionTrigger>
                 <AccordionContent className="pt-2">
+                    <div className="mb-3">
+                        <div className="relative">
+                            <HiSearch className="absolute left-3 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                placeholder={`Search ${title.toLowerCase()}...`}
+                                className="pl-9 h-8 text-sm bg-secondary/20"
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                    </div>
                     <ScrollArea className={title === 'Tags' ? 'h-12' : 'h-64'}>
                         <div className="space-y-2 pr-4">
-                            {options.map(option => (
+                            {filteredOptions.map(option => (
                                 <div
                                     key={option.id}
                                     className={`flex items-center space-x-2 ${option.disabled ? 'opacity-50' : ''}`}
@@ -155,8 +174,9 @@ export function UnifiedAssetList({
     const [viewMode, setViewMode] = useState<'grid' | 'list'>(endpoint === '/user/saved-assets' ? 'list' : 'grid')
     const [offset, setOffset] = useState(0)
     const [hasMore, setHasMore] = useState(true)
-    const [total, setTotal] = useState(0)
     const [initializedFromParams, setInitializedFromParams] = useState(false)
+    const [restoringState, setRestoringState] = useState(false)
+    const [stateRestored, setStateRestored] = useState(false)
 
     // Filter options
     const [availableGames, setAvailableGames] = useState<FilterOption[]>([])
@@ -173,6 +193,9 @@ export function UnifiedAssetList({
     })
 
     const searchParams = useSearchParams()
+
+    // Session storage key for this specific endpoint
+    const sessionStorageKey = `assetList_${endpoint.replace(/\//g, '_')}_state`
 
     // Auth check for saved assets
     const { data: session } = authClient.useSession()
@@ -227,24 +250,46 @@ export function UnifiedAssetList({
         })
     }, [availableCategories, availableGames, filters.selectedGames])
 
+    // Save state to sessionStorage
+    const saveStateToSession = useCallback(() => {
+        const state = {
+            assets,
+            offset,
+            filters,
+            hasMore,
+            viewMode,
+            scrollPosition: window.scrollY,
+            timestamp: Date.now(),
+        }
+        try {
+            sessionStorage.setItem(sessionStorageKey, JSON.stringify(state))
+        } catch (error) {
+            console.warn('Failed to save state to sessionStorage:', error)
+        }
+    }, [assets, offset, filters, hasMore, viewMode, sessionStorageKey])
+
     const updateFilter = <K extends keyof Filters>(key: K, value: Filters[K]) => {
         setFilters(prev => ({ ...prev, [key]: value }))
-        setOffset(0) // Reset to first page when filters change
-        setAssets([]) // Clear assets when filters change
+        setOffset(0)
+        setAssets([])
         setHasMore(true)
+        setStateRestored(false)
+        try {
+            sessionStorage.removeItem(sessionStorageKey)
+        } catch (error) {
+            console.warn('Failed to clear sessionStorage:', error)
+        }
     }
 
-    const initializeFiltersFromSearchParams = useCallback(
+    const parseInitialSearchParams = useCallback(
         (games: FilterOption[], categories: FilterOption[], tags: FilterOption[]) => {
             const initialFilters: Partial<Filters> = {}
 
-            // Parse search query (supports both 'search' and 'name' params)
             const searchQuery = searchParams?.get('search') || searchParams?.get('name') || ''
             if (searchQuery) {
                 initialFilters.searchQuery = searchQuery
             }
 
-            // Parse games - convert slugs to IDs
             const gamesSlugs = searchParams?.get('games')?.toLowerCase().split(',') || []
             if (gamesSlugs.length > 0 && gamesSlugs[0] !== '') {
                 const gameIds = gamesSlugs
@@ -255,7 +300,6 @@ export function UnifiedAssetList({
                 }
             }
 
-            // Parse categories - convert slugs to IDs
             const categorySlugs = searchParams?.get('categories')?.toLowerCase().split(',') || []
             if (categorySlugs.length > 0 && categorySlugs[0] !== '') {
                 const categoryIds = categorySlugs
@@ -266,7 +310,6 @@ export function UnifiedAssetList({
                 }
             }
 
-            // Parse tags - convert slugs to IDs
             const tagSlugs = searchParams?.get('tags')?.toLowerCase().split(',') || []
             if (tagSlugs.length > 0 && tagSlugs[0] !== '') {
                 const tagIds = tagSlugs
@@ -277,7 +320,6 @@ export function UnifiedAssetList({
                 }
             }
 
-            // Parse sort options
             const sortBy = searchParams?.get('sortBy')
             if (sortBy && ['uploadDate', 'name', 'downloadCount', 'viewCount', 'savedAt'].includes(sortBy)) {
                 initialFilters.sortBy = sortBy
@@ -288,15 +330,11 @@ export function UnifiedAssetList({
                 initialFilters.sortOrder = sortOrder as 'asc' | 'desc'
             }
 
-            // Apply the initial filters if any were found
-            if (Object.keys(initialFilters).length > 0) {
-                setFilters(prev => ({ ...prev, ...initialFilters }))
-            }
+            return initialFilters
         },
-        [searchParams],
+        [],
     )
 
-    // Fetch metadata (games, categories, tags) on mount
     useEffect(() => {
         const fetchMetadata = async () => {
             try {
@@ -327,9 +365,48 @@ export function UnifiedAssetList({
                 setAvailableCategories(categories)
                 setAvailableTags(tags)
 
-                // Initialize filters from URL search params only once
+                try {
+                    const savedState = sessionStorage.getItem(sessionStorageKey)
+                    if (savedState) {
+                        const state = JSON.parse(savedState)
+
+                        if (Date.now() - state.timestamp < 30 * 60 * 1000 && state.assets && state.assets.length > 0) {
+                            setRestoringState(true)
+                            setAssets(state.assets)
+                            setOffset(state.offset || 0)
+                            setFilters(state.filters)
+                            setHasMore(state.hasMore !== undefined ? state.hasMore : true)
+                            setViewMode(state.viewMode || viewMode)
+                            setInitializedFromParams(true)
+                            setStateRestored(true)
+
+                            setTimeout(() => {
+                                const targetScroll = state.scrollPosition || 0
+                                window.scrollTo(0, targetScroll)
+
+                                // Double-check and retry if needed
+                                setTimeout(() => {
+                                    if (Math.abs(window.scrollY - targetScroll) > 50) {
+                                        window.scrollTo(0, targetScroll)
+                                    }
+                                    setRestoringState(false)
+                                }, 100)
+                            }, 150)
+
+                            return
+                        } else {
+                            sessionStorage.removeItem(sessionStorageKey)
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Failed to restore state from sessionStorage:', error)
+                    sessionStorage.removeItem(sessionStorageKey)
+                }
                 if (!initializedFromParams) {
-                    initializeFiltersFromSearchParams(games, categories, tags)
+                    const urlFilters = parseInitialSearchParams(games, categories, tags)
+                    if (Object.keys(urlFilters).length > 0) {
+                        setFilters(prev => ({ ...prev, ...urlFilters }))
+                    }
                     setInitializedFromParams(true)
                 }
             } catch (error) {
@@ -421,6 +498,8 @@ export function UnifiedAssetList({
     )
 
     useEffect(() => {
+        if (restoringState || stateRestored) return
+
         if (availableGames.length > 0 || availableCategories.length > 0 || availableTags.length > 0) {
             fetchAssets(false)
         }
@@ -434,6 +513,8 @@ export function UnifiedAssetList({
         availableGames,
         availableCategories,
         availableTags,
+        restoringState,
+        stateRestored,
     ])
 
     // Infinite scroll handler
@@ -444,7 +525,6 @@ export function UnifiedAssetList({
             const scrollPosition = window.innerHeight + window.scrollY
             const documentHeight = document.documentElement.offsetHeight
 
-            // Load more when user is 200px from the bottom
             if (scrollPosition >= documentHeight - 200) {
                 fetchAssets(true)
             }
@@ -453,12 +533,29 @@ export function UnifiedAssetList({
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [loadingMore, hasMore, loading, fetchAssets])
+    useEffect(() => {
+        if (assets.length > 0) {
+            saveStateToSession()
+        }
+    }, [assets, saveStateToSession])
 
-    // Adjust sort options for saved assets
+    useEffect(() => {
+        let scrollTimeout: NodeJS.Timeout
+        const handleScroll = () => {
+            clearTimeout(scrollTimeout)
+            scrollTimeout = setTimeout(saveStateToSession, 100)
+        }
+
+        window.addEventListener('scroll', handleScroll, { passive: true })
+        return () => {
+            clearTimeout(scrollTimeout)
+            window.removeEventListener('scroll', handleScroll)
+        }
+    }, [saveStateToSession])
+
     const adjustedSortOptions =
         endpoint === '/user/saved-assets' ? [{ value: 'savedAt', label: 'Date Saved' }, ...sortOptions] : sortOptions
 
-    // Show auth required message if needed (after all hooks)
     if (requireAuth && !user) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
@@ -472,17 +569,19 @@ export function UnifiedAssetList({
 
     return (
         <div className="flex flex-col 2xl:flex-row gap-6">
-            {/* Filters Sidebar */}
             <div className="2xl:w-80 2xl:min-w-80 w-full bg-card rounded-lg border p-4 pt-2 space-y-6 h-fit 2xl:flex-shrink-0">
                 <div className="space-y-4">
-                    <div className="relative py-2">
-                        <HiSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                            placeholder="Search assets..."
-                            className="pl-10"
-                            value={filters.searchQuery}
-                            onChange={e => updateFilter('searchQuery', e.target.value)}
-                        />
+                    <div className="py-2">
+                        <label className="text-sm font-medium mb-2 block">Asset Name</label>
+                        <div className="relative">
+                            <HiSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                placeholder="e.g 'Hu Tao'..."
+                                className="pl-10 bg-secondary/20"
+                                value={filters.searchQuery}
+                                onChange={e => updateFilter('searchQuery', e.target.value)}
+                            />
+                        </div>
                     </div>
 
                     <MultiSelectFilter
@@ -509,7 +608,7 @@ export function UnifiedAssetList({
                     <div className="flex flex-col gap-2 w-full">
                         <label className="text-sm font-medium">Sort By</label>
                         <Select value={filters.sortBy} onValueChange={(value: any) => updateFilter('sortBy', value)}>
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger className="w-full bg-secondary/20">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -528,7 +627,7 @@ export function UnifiedAssetList({
                             value={filters.sortOrder}
                             onValueChange={(value: 'asc' | 'desc') => updateFilter('sortOrder', value)}
                         >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger className="w-full bg-secondary/20">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -540,7 +639,6 @@ export function UnifiedAssetList({
                 </div>
             </div>
 
-            {/* Assets List */}
             <div className="flex-1 min-w-0 overflow-hidden">
                 <div className="flex items-center justify-between mb-4">
                     <div className="text-sm text-muted-foreground"></div>
@@ -579,23 +677,29 @@ export function UnifiedAssetList({
                     </div>
                 ) : (
                     <>
-                        <div
-                            className={
-                                viewMode === 'grid'
-                                    ? 'columns-1 md:columns-2 xl:columns-3 2xl:columns-4 gap-4 space-y-4'
-                                    : 'flex flex-col gap-4'
-                            }
-                        >
-                            {assets.map(asset => (
-                                <AssetItem
-                                    key={asset.id}
-                                    asset={asset}
-                                    variant={viewMode === 'grid' ? 'card' : 'list'}
-                                />
-                            ))}
-                        </div>
-
-                        {/* Loading indicator for infinite scroll */}
+                        {viewMode === 'grid' ? (
+                            <ResponsiveMasonry
+                                columnsCountBreakPoints={{ 350: 1, 768: 2, 1280: 3, 1536: 4 }}
+                                gutterBreakpoints={{ 350: '16px', 768: '16px', 1280: '16px', 1536: '16px' }}
+                            >
+                                <Masonry sequential={true}>
+                                    {assets.map(asset => (
+                                        <AssetItem
+                                            className="w-full mb-0"
+                                            key={asset.id}
+                                            asset={asset}
+                                            variant="card"
+                                        />
+                                    ))}
+                                </Masonry>
+                            </ResponsiveMasonry>
+                        ) : (
+                            <div className="grid grid-cols-1 lg:grid-cols-3 w-full gap-4">
+                                {assets.map(asset => (
+                                    <AssetItem key={asset.id} asset={asset} variant="list" />
+                                ))}
+                            </div>
+                        )}
                         {loadingMore && (
                             <div className="flex items-center justify-center py-8">
                                 <AiOutlineLoading3Quarters className="h-6 w-6 animate-spin" />
