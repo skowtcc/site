@@ -1,26 +1,30 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Button } from '~/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '~/components/ui/dialog'
 
-interface OriginoidPromoDialogProps {
-    isOpen: boolean
-    onClose: () => void
-}
+export function OriginoidPromoDialog() {
+    const [isOpen, setIsOpen] = useState(false)
 
-export function OriginoidPromoDialog({ isOpen, onClose }: OriginoidPromoDialogProps) {
+    useEffect(() => {
+        const dismissed = localStorage.getItem('originoid-promo-dismissed')
+        if (!dismissed) {
+            setIsOpen(true)
+        }
+    }, [])
     const handlePreregister = () => {
         window.open('https://originoid.co', '_blank')
-        onClose()
+        setIsOpen(false)
     }
 
     const handleDontShowAgain = () => {
         localStorage.setItem('originoid-promo-dismissed', 'true')
-        onClose()
+        setIsOpen(false)
     }
 
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
                     <DialogTitle className="text-xl font-semibold text-center">
