@@ -38,7 +38,7 @@ export function OriginoidPromoDialog() {
                         <span className="font-medium text-foreground">Originoid</span>, a{' '}
                         <span className="font-semibold text-foreground">NO AI</span> platform to share and link your
                         original characters, videos, audios, artwork & images with advanced customization and full
-                        protection against AI, theft and misuse.
+                        protection against AI, theft and misuse. Releasing Nov 1st 2025.
                     </p>
                 </div>
 
