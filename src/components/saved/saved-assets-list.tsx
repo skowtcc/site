@@ -325,8 +325,6 @@ export function SavedAssetsList() {
                             <SelectContent>
                                 <SelectItem value="savedAt">Date Saved</SelectItem>
                                 <SelectItem value="name">Name</SelectItem>
-                                <SelectItem value="downloadCount">Downloads</SelectItem>
-                                <SelectItem value="viewCount">Views</SelectItem>
                                 <SelectItem value="uploadDate">Upload Date</SelectItem>
                             </SelectContent>
                         </Select>
@@ -382,7 +380,6 @@ export function SavedAssetsList() {
                         {loadingMore && (
                             <div className="flex items-center justify-center py-8">
                                 <AiOutlineLoading3Quarters className="h-6 w-6 animate-spin" />
-                                <span className="ml-2 text-sm text-muted-foreground">Loading more assets...</span>
                             </div>
                         )}
                     </>

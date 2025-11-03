@@ -8,9 +8,11 @@ export function BackButton({ className }: { className?: string }) {
     const router = useRouter()
 
     return (
-        <Button size="sm" variant="outline" className={className} onClick={() => router.back()}>
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            Go Back
-        </Button>
+        <div className="bg-card px-3 p-2.5 rounded-lg">
+            <Button size="sm" variant={'secondary'} className={className} onClick={() => router.back()}>
+                <ArrowLeft className="h-4 w-4" />
+                Go Back
+            </Button>
+        </div>
     )
 }

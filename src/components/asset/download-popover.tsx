@@ -122,7 +122,7 @@ export function DownloadPopover({ children }: DownloadPopoverProps) {
                         )}
                     </div>
                     {/* <Button
-            variant="ghost"
+            variant="secondary"
             size="sm"
             onClick={handleClearAll}
             disabled={isMassDownloading}
@@ -133,7 +133,7 @@ export function DownloadPopover({ children }: DownloadPopoverProps) {
 
                     {}
                     <Button
-                        variant="outline"
+                        variant="secondary"
                         size="sm"
                         onClick={() => setIsOpen(false)}
                         disabled={isMassDownloading}
@@ -183,7 +183,7 @@ export function DownloadPopover({ children }: DownloadPopoverProps) {
                                     </div>
 
                                     <Button
-                                        variant="ghost"
+                                        variant="secondary"
                                         size="sm"
                                         onClick={() => handleRemoveAsset(asset.id)}
                                         disabled={isMassDownloading}

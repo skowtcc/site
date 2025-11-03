@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~/components/ui/accordion'
 import { Checkbox } from '~/components/ui/checkbox'
 import { ScrollArea } from '~/components/ui/scroll-area'
-import { HiSearch, HiOutlineViewGrid, HiOutlineViewList } from 'react-icons/hi'
+import { HiSearch, HiOutlineViewGrid, HiMenu } from 'react-icons/hi'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import Image from 'next/image'
 import { client } from '~/lib/api/client'
@@ -175,8 +175,7 @@ export function UnifiedAssetList({
     const [offset, setOffset] = useState(0)
     const [hasMore, setHasMore] = useState(true)
     const [initializedFromParams, setInitializedFromParams] = useState(false)
-    const [restoringState, setRestoringState] = useState(false)
-    const [stateRestored, setStateRestored] = useState(false)
+    const [initialFetched, setInitialFetched] = useState(false)
 
     // Filter options
     const [availableGames, setAvailableGames] = useState<FilterOption[]>([])
@@ -193,9 +192,6 @@ export function UnifiedAssetList({
     })
 
     const searchParams = useSearchParams()
-
-    // Session storage key for this specific endpoint
-    const sessionStorageKey = `assetList_${endpoint.replace(/\//g, '_')}_state`
 
     // Auth check for saved assets
     const { data: session } = authClient.useSession()
@@ -250,35 +246,11 @@ export function UnifiedAssetList({
         })
     }, [availableCategories, availableGames, filters.selectedGames])
 
-    // Save state to sessionStorage
-    const saveStateToSession = useCallback(() => {
-        const state = {
-            assets,
-            offset,
-            filters,
-            hasMore,
-            viewMode,
-            scrollPosition: window.scrollY,
-            timestamp: Date.now(),
-        }
-        try {
-            sessionStorage.setItem(sessionStorageKey, JSON.stringify(state))
-        } catch (error) {
-            console.warn('Failed to save state to sessionStorage:', error)
-        }
-    }, [assets, offset, filters, hasMore, viewMode, sessionStorageKey])
-
     const updateFilter = <K extends keyof Filters>(key: K, value: Filters[K]) => {
         setFilters(prev => ({ ...prev, [key]: value }))
         setOffset(0)
         setAssets([])
         setHasMore(true)
-        setStateRestored(false)
-        try {
-            sessionStorage.removeItem(sessionStorageKey)
-        } catch (error) {
-            console.warn('Failed to clear sessionStorage:', error)
-        }
     }
 
     const parseInitialSearchParams = useCallback(
@@ -365,43 +337,6 @@ export function UnifiedAssetList({
                 setAvailableCategories(categories)
                 setAvailableTags(tags)
 
-                try {
-                    const savedState = sessionStorage.getItem(sessionStorageKey)
-                    if (savedState) {
-                        const state = JSON.parse(savedState)
-
-                        if (Date.now() - state.timestamp < 30 * 60 * 1000 && state.assets && state.assets.length > 0) {
-                            setRestoringState(true)
-                            setAssets(state.assets)
-                            setOffset(state.offset || 0)
-                            setFilters(state.filters)
-                            setHasMore(state.hasMore !== undefined ? state.hasMore : true)
-                            setViewMode(state.viewMode || viewMode)
-                            setInitializedFromParams(true)
-                            setStateRestored(true)
-
-                            setTimeout(() => {
-                                const targetScroll = state.scrollPosition || 0
-                                window.scrollTo(0, targetScroll)
-
-                                // Double-check and retry if needed
-                                setTimeout(() => {
-                                    if (Math.abs(window.scrollY - targetScroll) > 50) {
-                                        window.scrollTo(0, targetScroll)
-                                    }
-                                    setRestoringState(false)
-                                }, 100)
-                            }, 150)
-
-                            return
-                        } else {
-                            sessionStorage.removeItem(sessionStorageKey)
-                        }
-                    }
-                } catch (error) {
-                    console.warn('Failed to restore state from sessionStorage:', error)
-                    sessionStorage.removeItem(sessionStorageKey)
-                }
                 if (!initializedFromParams) {
                     const urlFilters = parseInitialSearchParams(games, categories, tags)
                     if (Object.keys(urlFilters).length > 0) {
@@ -492,14 +427,14 @@ export function UnifiedAssetList({
             } finally {
                 setLoading(false)
                 setLoadingMore(false)
+                // Mark that the initial fetch has completed (or a subsequent fetch finished)
+                setInitialFetched(true)
             }
         },
         [offset, filters, endpoint, availableGames, availableCategories, availableTags],
     )
 
     useEffect(() => {
-        if (restoringState || stateRestored) return
-
         if (availableGames.length > 0 || availableCategories.length > 0 || availableTags.length > 0) {
             fetchAssets(false)
         }
@@ -513,8 +448,6 @@ export function UnifiedAssetList({
         availableGames,
         availableCategories,
         availableTags,
-        restoringState,
-        stateRestored,
     ])
 
     // Infinite scroll handler
@@ -533,25 +466,6 @@ export function UnifiedAssetList({
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [loadingMore, hasMore, loading, fetchAssets])
-    useEffect(() => {
-        if (assets.length > 0) {
-            saveStateToSession()
-        }
-    }, [assets, saveStateToSession])
-
-    useEffect(() => {
-        let scrollTimeout: NodeJS.Timeout
-        const handleScroll = () => {
-            clearTimeout(scrollTimeout)
-            scrollTimeout = setTimeout(saveStateToSession, 100)
-        }
-
-        window.addEventListener('scroll', handleScroll, { passive: true })
-        return () => {
-            clearTimeout(scrollTimeout)
-            window.removeEventListener('scroll', handleScroll)
-        }
-    }, [saveStateToSession])
 
     const adjustedSortOptions =
         endpoint === '/user/saved-assets' ? [{ value: 'savedAt', label: 'Date Saved' }, ...sortOptions] : sortOptions
@@ -641,30 +555,31 @@ export function UnifiedAssetList({
 
             <div className="flex-1 min-w-0 overflow-hidden">
                 <div className="flex items-center justify-between mb-4">
-                    <div className="text-sm text-muted-foreground"></div>
+                    <div></div>
+                    {/* ? why */}
                     {endpoint !== '/user/saved-assets' && (
-                        <div className="flex items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setViewMode('grid')}
-                                className={viewMode === 'grid' ? 'bg-muted' : ''}
-                            >
-                                <HiOutlineViewGrid size={16} />
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setViewMode('list')}
-                                className={viewMode === 'list' ? 'bg-muted' : ''}
-                            >
-                                <HiOutlineViewList size={16} />
-                            </Button>
+                        <div className="bg-card flex flex-row gap-3 px-3 p-2 rounded-xl">
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant={viewMode === 'grid' ? 'default' : 'secondary'}
+                                    size="sm"
+                                    onClick={() => setViewMode('grid')}
+                                >
+                                    <HiOutlineViewGrid size={16} />
+                                </Button>
+                                <Button
+                                    variant={viewMode === 'list' ? 'default' : 'secondary'}
+                                    size="sm"
+                                    onClick={() => setViewMode('list')}
+                                >
+                                    <HiMenu size={16} />
+                                </Button>
+                            </div>
                         </div>
                     )}
                 </div>
 
-                {loading ? (
+                {loading || !initialFetched ? (
                     <div className="flex items-center justify-center min-h-[400px]">
                         <AiOutlineLoading3Quarters className="h-8 w-8 animate-spin" />
                     </div>
@@ -679,8 +594,8 @@ export function UnifiedAssetList({
                     <>
                         {viewMode === 'grid' ? (
                             <ResponsiveMasonry
-                                columnsCountBreakPoints={{ 350: 1, 768: 2, 1280: 3, 1536: 4 }}
-                                gutterBreakpoints={{ 350: '16px', 768: '16px', 1280: '16px', 1536: '16px' }}
+                                columnsCountBreakPoints={{ 350: 2, 768: 3, 1280: 3 }}
+                                gutterBreakpoints={{ 350: '20px', 768: '20px', 1280: '20px' }}
                             >
                                 <Masonry sequential={true}>
                                     {assets.map(asset => (
@@ -694,7 +609,7 @@ export function UnifiedAssetList({
                                 </Masonry>
                             </ResponsiveMasonry>
                         ) : (
-                            <div className="grid grid-cols-1 lg:grid-cols-3 w-full gap-4">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-4">
                                 {assets.map(asset => (
                                     <AssetItem key={asset.id} asset={asset} variant="list" />
                                 ))}
@@ -703,7 +618,6 @@ export function UnifiedAssetList({
                         {loadingMore && (
                             <div className="flex items-center justify-center py-8">
                                 <AiOutlineLoading3Quarters className="h-6 w-6 animate-spin" />
-                                <span className="ml-2 text-sm text-muted-foreground">Loading more assets...</span>
                             </div>
                         )}
                     </>

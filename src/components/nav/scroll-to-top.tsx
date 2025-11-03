@@ -52,7 +52,7 @@ export function ScrollToTop(): React.ReactElement {
             }}
             transition={{ duration: 0.15 }}
         >
-            <Button variant="outline" className="hover:bg-secondary" onClick={handleButtonClick}>
+            <Button variant="secondary" className="hover:bg-secondary" onClick={handleButtonClick}>
                 <HiArrowUp />
             </Button>
         </motion.div>

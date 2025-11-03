@@ -117,7 +117,7 @@ function AssetApprovalQueue() {
                             )}
                         </div>
                         <div className="flex flex-row gap-2 mt-4">
-                            <Button variant="outline" size="sm" onClick={() => approveAsset(asset.id)}>
+                            <Button variant="secondary" size="sm" onClick={() => approveAsset(asset.id)}>
                                 <CheckIcon className="w-4 h-4" />
                             </Button>
                             <Button variant="destructive" size="sm" onClick={() => denyAsset(asset.id)}>

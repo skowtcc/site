@@ -1,6 +1,5 @@
 import type { Metadata, ResolvingMetadata } from 'next'
 import Image from 'next/image'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table'
 import { Badge } from '~/components/ui/badge'
 import {
     Download,
@@ -20,7 +19,6 @@ import { notFound } from 'next/navigation'
 import { AssetImage } from '~/components/asset/asset-image'
 import { AssetActions } from '~/components/asset/asset-actions'
 import { SimilarAssets } from '~/components/asset/asset-similar-assets'
-import { BackButton } from '~/components/ui/back-button'
 import Link from 'next/link'
 
 export const runtime = 'edge'
@@ -101,9 +99,6 @@ export default async function Page({ params }: Props) {
 
     return (
         <div className="flex flex-col gap-2 p-6 min-h-screen">
-            <div className="flex items-center gap-2 mb-4">
-                <BackButton className="w-min text-xs" />
-            </div>
             <div className="flex lg:flex-row flex-col gap-6">
                 <div className="lg:w-1/2">
                     <div className="bg-card border border-border rounded-lg p-4 xl:h-full">
@@ -128,153 +123,90 @@ export default async function Page({ params }: Props) {
 
                 {}
                 <div className="flex flex-col gap-4 lg:w-1/2 w-full xl:h-full">
-                    {/* Action Buttons - Show first on mobile/tablet */}
                     <AssetActions asset={asset} className="xl:hidden" />
 
-                    <div className="bg-card border border-border rounded-lg p-4 xl:flex-1">
-                        <h3 className="text-lg font-semibold mb-4">Asset Details</h3>
+                    <div className="bg-card rounded-xl p-6 xl:flex-1">
+                        <div className="space-y-6 pb-6 border-b border-border/50">
+                            <div className="flex flex-col gap-2">
+                                <h1 className="text-2xl md:text-3xl font-bold tracking-tight leading-tight">
+                                    {asset.name}
+                                </h1>
 
-                        <div className="space-y-4">
-                            {}
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="w-1/2">Property</TableHead>
-                                        <TableHead>Value</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    <TableRow>
-                                        <TableCell className="font-medium">Asset Name</TableCell>
-                                        <TableCell className="line-clamp-1 overflow-x-auto text-sm">
-                                            {asset.name}
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow className="bg-secondary/50">
-                                        <TableCell className="font-medium">Game</TableCell>
-                                        <TableCell className="text-sm flex items-center gap-2">
-                                            <Image
-                                                src={`https://pack.skowt.cc/cdn-cgi/image/width=64,height=64,quality=75/game/${asset.game.slug}-icon.png`}
-                                                alt={asset.game.name}
-                                                width={20}
-                                                height={20}
-                                                className="rounded-md"
-                                            />
-                                            {asset.game.name}
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell className="font-medium">Category</TableCell>
-                                        <TableCell className="text-sm">{asset.category.name}</TableCell>
-                                    </TableRow>
-                                    <TableRow className="bg-secondary/50">
-                                        <TableCell className="font-medium">File Size</TableCell>
-                                        <TableCell className="font-mono text-sm">
-                                            {formatFileSize(asset.size)}
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell className="font-medium">File Type</TableCell>
-                                        <TableCell>
-                                            <Badge variant="secondary">{asset.extension.toUpperCase()}</Badge>
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow className="bg-secondary/50">
-                                        <TableCell className="font-medium">Tags</TableCell>
-                                        <TableCell>
-                                            <div className="flex flex-wrap gap-1">
-                                                {asset.tags.map(tag => (
-                                                    <Badge
-                                                        key={tag.id}
-                                                        variant="secondary"
-                                                        className="text-xs"
-                                                        style={
-                                                            tag.color
-                                                                ? {
-                                                                      backgroundColor: `${tag.color}20`,
-                                                                      borderColor: tag.color,
-                                                                      borderWidth: '1px',
-                                                                      color: tag.color,
-                                                                  }
-                                                                : {}
-                                                        }
-                                                    >
-                                                        {tag.name}
-                                                    </Badge>
-                                                ))}
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell className="font-medium">Upload Date</TableCell>
-                                        <TableCell className="flex items-center gap-2">
-                                            <Calendar className="h-4 w-4" />
-                                            <span>{formatDate(asset.createdAt)}</span>
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow className="bg-secondary/50">
-                                        <TableCell className="font-medium">Downloads</TableCell>
-                                        <TableCell className="flex items-center gap-2">
-                                            <Download className="h-4 w-4" />
-                                            {/* <span>{formatNumber(asset.downloadCount)}</span> */}
-                                            <span>Not enough data</span>
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell className="font-medium">Views</TableCell>
-                                        <TableCell className="flex items-center gap-2">
-                                            <Eye className="h-4 w-4" />
-                                            {/* <span>{formatNumber(asset.viewCount)}</span> */}
-                                            <span>Not enough data</span>
-                                        </TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
+                                <div className="flex items-center gap-2 text-muted-foreground">
+                                    <span className="text-sm font-medium">{asset.game.name}</span>
+                                    <span className="text-muted-foreground/60">·</span>
+                                    <span className="text-sm">{asset.category.name}</span>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-muted-foreground/80">
+                                <span className="text-xs">Uploaded by</span>
+                                {asset.uploadedBy.image && (
+                                    <Image
+                                        src={asset.uploadedBy.image}
+                                        alt={asset.uploadedBy.username || 'unknown'}
+                                        width={20}
+                                        height={20}
+                                        className="rounded-full"
+                                    />
+                                )}
+                                <span className="text-xs font-medium text-foreground">
+                                    {asset.uploadedBy.username || 'unknown user'}
+                                </span>
+                            </div>
+                        </div>
+
+                        {asset.tags.length > 0 && (
+                            <div className="py-4 border-b border-border/50">
+                                <div className="flex flex-wrap gap-2">
+                                    {asset.tags.map(tag => (
+                                        <Badge
+                                            key={tag.id}
+                                            variant="secondary"
+                                            className="text-xs font-medium px-2.5 py-1 rounded-full"
+                                            style={
+                                                tag.color
+                                                    ? {
+                                                          backgroundColor: `${tag.color}15`,
+                                                          borderColor: `${tag.color}40`,
+                                                          borderWidth: '1px',
+                                                          color: tag.color,
+                                                      }
+                                                    : {}
+                                            }
+                                        >
+                                            {tag.name}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="pt-4 grid grid-cols-3 gap-3">
+                            <div className="bg-secondary/30 rounded-xl p-3 border border-border/30">
+                                <div className="text-xs text-muted-foreground font-medium mb-1">Type</div>
+                                <div className="text-sm font-semibold uppercase tracking-wide">{asset.extension}</div>
+                            </div>
+
+                            <div className="bg-secondary/30 rounded-xl p-3 border border-border/30">
+                                <div className="text-xs text-muted-foreground font-medium mb-1">Size</div>
+                                <div className="text-sm font-semibold">{formatFileSize(asset.size)}</div>
+                            </div>
+
+                            <div className="bg-secondary/30 rounded-xl p-3 border border-border/30">
+                                <div className="text-xs text-muted-foreground font-medium mb-1">Uploaded</div>
+                                <div className="text-sm font-semibold">
+                                    {new Date(asset.createdAt).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                    })}
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div className="flex flex-col gap-2 xl:flex-1">
-                        <div className="flex flex-col gap-2 bg-card border border-border rounded-lg mb-2 xl:flex-1">
-                            <div className="flex flex-col p-4 xl:flex-1">
-                                <p className="text-lg font-medium mb-4">Uploader Details</p>
-                                <div className="flex flex-row gap-4 items-center">
-                                    <div className="size-16 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-                                        {asset.uploadedBy.image ? (
-                                            <Image
-                                                src={asset.uploadedBy.image}
-                                                alt={asset.uploadedBy.username || 'User'}
-                                                width={64}
-                                                height={64}
-                                                className="object-cover"
-                                            />
-                                        ) : (
-                                            <User className="h-6 w-6" />
-                                        )}
-                                    </div>
-                                    <div className="flex flex-col space-y-1">
-                                        <p>@{asset.uploadedBy.username}</p>
-                                        {}
-                                        <Badge
-                                            variant="secondary"
-                                            className="text-xs bg-primary text-primary-foreground"
-                                        >
-                                            {asset.uploadedBy.username == 'dromzeh' ? (
-                                                <>
-                                                    <CodeXmlIcon size={20} />
-                                                    DEVELOPER
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <StarIcon size={20} />
-                                                    CONTRIBUTOR
-                                                </>
-                                            )}
-                                        </Badge>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <AssetActions asset={asset} className="hidden xl:flex" />
                     </div>
                 </div>

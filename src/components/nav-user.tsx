@@ -70,7 +70,7 @@ export function NavUser() {
         <div className="bg-background">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="w-full justify-start h-auto p-3 data-[state=open]:bg-muted">
+                    <Button variant="secondary" className="w-full justify-start h-auto p-3 data-[state=open]:bg-muted">
                         <Avatar className="h-8 w-8 rounded-lg">
                             <AvatarImage src={user.image || ''} alt={displayText} />
                             <AvatarFallback className="rounded-lg">{fallbackLetter}</AvatarFallback>

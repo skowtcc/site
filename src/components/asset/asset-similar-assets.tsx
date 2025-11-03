@@ -83,7 +83,6 @@ export function SimilarAssets({ currentAssetId, gameSlug, categorySlug, gameName
     if (loading) {
         return (
             <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-4">Similar Assets</h2>
                 <div className="grid grid-cols-1 lg:grid-cols-3 w-full gap-4">
                     {[...Array(6)].map((_, i) => (
                         <div key={i} className="bg-muted/50 rounded-lg h-20 animate-pulse" />
@@ -95,7 +94,6 @@ export function SimilarAssets({ currentAssetId, gameSlug, categorySlug, gameName
 
     return (
         <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-2">Similar Assets</h2>
             <div className="grid grid-cols-1 lg:grid-cols-3 w-full gap-4">
                 {similarAssets.map(asset => (
                     <AssetItem key={asset.id} asset={asset} variant="list" className="w-full" />

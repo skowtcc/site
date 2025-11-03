@@ -191,7 +191,7 @@ function DynamicTagDisplay({
                 )
             })}
             {hiddenCount > 0 && (
-                <Badge variant="outline" className="text-xs text-muted-foreground">
+                <Badge variant="secondary" className="text-xs text-muted-foreground">
                     +{hiddenCount} more
                 </Badge>
             )}
@@ -253,26 +253,13 @@ export function AssetItem({ asset, variant = 'card', className }: AssetItemProps
         return (
             <div
                 className={cn(
-                    `relative flex items-center gap-4 p-4 border rounded-lg bg-card border-2 hover:border-primary transition-all duration-150 cursor-pointer break-inside-avoid ${isSelected ? 'border-1 border-primary' : ''}`,
+                    `relative flex items-center gap-4 p-4 border rounded-lg bg-card background-blur-lg  hover:border-foreground transition-all duration-150 cursor-pointer break-inside-avoid`,
                     className,
                 )}
             >
                 <Link href={`/asset/${asset.id}`} className="flex items-center gap-4 w-full" onClick={handleItemClick}>
-                    <div className="absolute inset-0">
-                        <img
-                            src={
-                                'https://pack.skowt.cc/cdn-cgi/image/width=100,quality=10/asset/' +
-                                asset.id +
-                                '.' +
-                                asset.extension
-                            }
-                            alt=""
-                            className="w-full h-full object-cover opacity-5 blur-sm"
-                        />
-                    </div>
-
                     <div className="relative flex items-center gap-4 w-full">
-                        <div className="flex-shrink-0 w-20 h-20 rounded bg-muted flex items-center justify-center p-2">
+                        <div className="flex-shrink-0 w-20 h-20 rounded bg-secondary flex items-center justify-center p-2">
                             <img
                                 src={
                                     'https://pack.skowt.cc/cdn-cgi/image/width=300,quality=70/asset/' +
@@ -289,7 +276,9 @@ export function AssetItem({ asset, variant = 'card', className }: AssetItemProps
                             <div className="flex items-start justify-between gap-4">
                                 <div className="flex-1 min-w-0">
                                     <h3
-                                        className={`font-medium text-base truncate ${asset.isSuggestive && !showSuggestive ? 'blur-sm' : ''}`}
+                                        className={`font-medium text-base truncate transition-all duration-150 inline-block w-fit ${
+                                            isSelected ? 'bg-accent text-accent-foreground px-2 rounded' : ''
+                                        } ${asset.isSuggestive && !showSuggestive ? 'blur-sm' : ''}`}
                                     >
                                         {asset.name}
                                     </h3>
@@ -324,37 +313,6 @@ export function AssetItem({ asset, variant = 'card', className }: AssetItemProps
                                         </span>
                                     </div>
                                 </div>
-
-                                <div
-                                    className={`hidden sm:flex flex-col items-end gap-2 ${asset.isSuggestive && !showSuggestive ? 'blur-sm' : ''}`}
-                                >
-                                    <div className="flex flex-wrap gap-1 justify-end">
-                                        {asset.tags.slice(0, 3).map(tag => (
-                                            <Badge
-                                                key={tag.id}
-                                                variant="secondary"
-                                                className="text-xs"
-                                                style={
-                                                    tag.color
-                                                        ? {
-                                                              backgroundColor: `${tag.color}20`,
-                                                              borderColor: tag.color,
-                                                              borderWidth: '1px',
-                                                              color: tag.color,
-                                                          }
-                                                        : {}
-                                                }
-                                            >
-                                                {tag.name}
-                                            </Badge>
-                                        ))}
-                                        {asset.tags.length > 3 && (
-                                            <Badge variant="outline" className="text-xs">
-                                                +{asset.tags.length - 3} more
-                                            </Badge>
-                                        )}
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -376,28 +334,15 @@ export function AssetItem({ asset, variant = 'card', className }: AssetItemProps
     return (
         <div
             className={cn(
-                `relative bg-card rounded-lg border overflow-hidden border-2 hover:border-primary transition-all duration-150 mb-4 break-inside-avoid ${isSelected ? 'border-1 border-primary' : ' '}`,
+                `relative bg-card rounded-lg border overflow-hidden hover:border-foreground transition-all duration-150 mb-2 break-inside-avoid`,
                 className,
             )}
         >
             <Link href={`/asset/${asset.id}`} onClick={handleItemClick}>
-                <div className="absolute inset-0">
-                    <img
-                        src={
-                            'https://pack.skowt.cc/cdn-cgi/image/width=100,quality=10/asset/' +
-                            asset.id +
-                            '.' +
-                            asset.extension
-                        }
-                        alt=""
-                        className="w-full h-full object-cover opacity-5 blur-sm"
-                    />
-                </div>
-
-                <div className="relative">
+                <div className="relative p-2">
                     <div className="p-2">
                         <div
-                            className="bg-muted relative rounded-md overflow-hidden flex items-center justify-center p-4"
+                            className="bg-secondary relative rounded-md overflow-hidden flex items-center justify-center p-4"
                             style={{ minHeight: '200px' }}
                         >
                             <img
@@ -414,12 +359,16 @@ export function AssetItem({ asset, variant = 'card', className }: AssetItemProps
                         </div>
                     </div>
                     <div className="space-y-2">
-                        <h3
-                            className={`px-4 pt-2 font-semibold text-sm line-clamp-1 overflow-hidden text-ellipsis ${asset.isSuggestive && !showSuggestive ? 'blur-sm' : ''}`}
-                        >
-                            {asset.name}
-                        </h3>
-                        <div className={`px-4 ${asset.isSuggestive && !showSuggestive ? 'blur-sm' : ''}`}>
+                        <div className="px-4 pt-2">
+                            <h3
+                                className={`font-semibold text-sm truncate transition-all duration-150 inline-block w-fit max-w-full ${
+                                    isSelected ? 'bg-accent text-accent-foreground px-2 rounded' : ''
+                                } ${asset.isSuggestive && !showSuggestive ? 'blur-sm' : ''}`}
+                            >
+                                {asset.name}
+                            </h3>
+                        </div>
+                        <div className={`px-4 pb-3 ${asset.isSuggestive && !showSuggestive ? 'blur-sm' : ''}`}>
                             <DynamicTagDisplay
                                 tags={allTags}
                                 gameSlug={asset.gameSlug}
@@ -427,32 +376,7 @@ export function AssetItem({ asset, variant = 'card', className }: AssetItemProps
                                 tagObjects={asset.tags}
                             />
                         </div>
-                        <div
-                            className={`flex px-4 p-4 items-center mt-4 border-t justify-between text-xs text-muted-foreground ${asset.isSuggestive && !showSuggestive ? 'blur-sm' : ''}`}
-                        >
-                            {/* <div className="flex flex-row items-center gap-4">
-                                <div className="flex items-center gap-1">
-                                    <Download className="h-3 w-3" />
-                                    <span>{asset.downloadCount}</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <Eye className="h-3 w-3" />
-                                    <span>{asset.viewCount}</span>
-                                </div>
-                            </div> */}
-                            <div className="flex flex-row items-center gap-4">
-                                <div className="flex items-center gap-1">
-                                    <HiOutlineCalendar className="h-3 w-3" />
-                                    <span>{formatDistanceToNow(new Date(asset.createdAt), { addSuffix: true })}</span>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <HiOutlineDocument className="h-3 w-3" />
-                                <span>{formatFileSize(asset.size)}</span>
-                            </div>
-                        </div>
                     </div>
-
                     {asset.isSuggestive && !showSuggestive && (
                         <div className="absolute inset-0 bg-background/80 backdrop-blur-lg flex items-center justify-center">
                             <div className="flex flex-col text-center items-center px-4">

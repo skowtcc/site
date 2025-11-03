@@ -127,7 +127,7 @@ export function AssetActions({ asset, className }: AssetActionsProps) {
     }
 
     return (
-        <div className={`flex flex-col gap-2 ${className}`}>
+        <div className={`flex flex-col gap-2 p-4 bg-card rounded-lg border ${className}`}>
             <Button onClick={handleDownload} className="hover:cursor-pointer">
                 <DownloadIcon className="h-4 w-4" />
                 Download Asset
@@ -136,11 +136,11 @@ export function AssetActions({ asset, className }: AssetActionsProps) {
                 {isSelected ? <MinusIcon className="h-4 w-4" /> : <PlusIcon className="h-4 w-4" />}
                 {isSelected ? 'Deselect Asset' : 'Select Asset'}
             </Button>
-            <Button variant="outline" onClick={handleSave} className="hover:cursor-pointer" disabled={!user}>
+            <Button variant="secondary" onClick={handleSave} className="hover:cursor-pointer" disabled={!user}>
                 <HeartIcon fill={isSaved ? 'currentColor' : 'none'} className="h-4 w-4" />
                 {isSaved ? 'Unsave Asset' : 'Save Asset'}
             </Button>
-            <Button onClick={copyToClipboard} variant="outline" className="hover:cursor-pointer">
+            <Button onClick={copyToClipboard} variant="secondary" className="hover:cursor-pointer">
                 <HiOutlineClipboard className="h-4 w-4" />
                 Copy Asset URL
             </Button>

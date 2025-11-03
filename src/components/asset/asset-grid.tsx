@@ -39,14 +39,13 @@ export function AssetGrid() {
                     <div className="flex justify-center items-center py-8">
                         <div className="flex items-center space-x-2">
                             <Loader2 className="h-5 w-5 animate-spin" />
-                            <span className="text-muted-foreground">Loading more assets...</span>
                         </div>
                     </div>
                 )}
 
                 {pagination && !pagination.hasNext && assets.length > 0 && (
                     <div className="flex justify-center items-center py-8">
-                        <p className="text-muted-foreground">You've reached the end of the list</p>
+                        <p className="text-foreground">You've reached the end of the list</p>
                     </div>
                 )}
             </div>

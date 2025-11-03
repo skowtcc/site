@@ -30,7 +30,7 @@ export function NavSecondary({
                     </Button>
                 ))}
                 {/* <Button
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
                     className="w-full justify-start hover:cursor-pointer"
                     onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}

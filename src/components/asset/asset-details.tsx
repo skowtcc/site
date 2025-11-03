@@ -107,7 +107,7 @@ export function AssetDetails() {
                                 </h4>
                                 <div className="flex flex-wrap gap-1">
                                     {assets[0].tags.map(tag => (
-                                        <Badge key={tag.id} variant="outline" className="text-xs">
+                                        <Badge key={tag.id} variant="secondary" className="text-xs">
                                             {tag.name}
                                         </Badge>
                                     ))}
